@@ -4,6 +4,7 @@ import cors from "cors";
 import sequelize from "./db.js";
 
 import router from "./routes/index.js";
+import errorHandler from "./middleware/ErrorHandlingMiidleware.js";
 
 config();
 
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api", router);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
