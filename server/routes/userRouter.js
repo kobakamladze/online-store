@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { body } from "express-validator";
 
-const userRouter = new Router();
-
 import userController from "../controller/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
+const userRouter = new Router();
+
 /* 
-    POST /api/users/registration
+    POST /api/user/registration
+
+    User registration with email and password
 */
 userRouter.post(
   "/registration",
@@ -15,13 +17,13 @@ userRouter.post(
   body("email").notEmpty().isEmail(),
   // Validation for password
   body("password").notEmpty(),
-  // Validation for role
-  body("role").notEmpty(),
   userController.registration
 );
 
 /* 
-    POST /api/users/login
+    POST /api/user/login
+
+    Logging in with email and password
 */
 userRouter.post(
   "/login",
@@ -29,11 +31,14 @@ userRouter.post(
   body("email").notEmpty().isEmail(),
   // Validation of password
   body("password").notEmpty(),
+  // userController.login
   userController.login
 );
 
 /* 
-    GET /api/users/auth
+    GET /api/user/auth
+
+    Authorization endpoint
 */
 userRouter.get("/auth", authMiddleware, userController.check);
 

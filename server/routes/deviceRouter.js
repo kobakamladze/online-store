@@ -3,6 +3,7 @@ import { Router } from "express";
 const deviceRouter = new Router();
 
 import deviceController from "../controller/deviceController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 import authRoleMiddleware from "../middleware/checkRoleMiddleware.js";
 
 /*
@@ -13,7 +14,7 @@ deviceRouter.post("/", authRoleMiddleware("ADMIN"), deviceController.create);
 /*
     GET /api/device
 */
-deviceRouter.get("/", deviceController.getAll);
+deviceRouter.get("/", authMiddleware, deviceController.getAll);
 
 /*
     GET /api/device/:deviceId

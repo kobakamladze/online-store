@@ -1,11 +1,18 @@
-import jwt from "jsonwebtoken";
+import ApiError from "../error/ApiError.js";
+import TokenService from "../services/TokenService.js";
 
 export default function (req, res, next) {
-  const token = req.headers.authorization.split(" ")[1];
+  try {
+    const token = req.headers.authorization.split(" ")[1];
 
-  if (!token) return res.status(401).json({ message: "Not aurthorized" });
+    if (!token) throw ApiError.badRequest({ message: "Not aurthorized" });
 
-  const decoded = jwt.verify(token, process.env.SECRET);
-  req.user = decoded;
-  next();
+    const decoded = TokenService.verifyAccessToken(token);
+    if (!decoded) throw ApiError.badRequest({ message: "Not aurthorized" });
+
+    req.user = decoded;
+    next();
+  } catch (e) {
+    next(ApiError.badRequest({ message: "Not authorized" }));
+  }
 }

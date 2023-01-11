@@ -1,15 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
-
 import ApiError from "../error/ApiError.js";
-import { Basket, User } from "../models/model.js";
 
-function generateToken({ id, email, role }) {
-  const payload = { id, email, role };
-
-  return jwt.sign(payload, process.env.SECRET, { expiresIn: "24h" });
-}
+import AuthService from "../services/AuthService.js";
 
 class UserController {
   registration(req, res, next) {
@@ -21,27 +13,17 @@ class UserController {
 
     const { email, password, role } = req.body;
 
-    return User.findOne({ where: { email } })
-      .then((candidate) => {
-        if (candidate)
-          throw ApiError.badRequest({
-            message: "User with such Email already exists.",
-          });
+    return AuthService.registration({ email, password, role })
+      .then((token) => {
+        console.log(token);
 
-        const hashedPassword = bcrypt.hashSync(password, 10);
+        res.cookie("token", token, {
+          maxAge: 24 * 60 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
 
-        return Promise.all([
-          User.create({ email, password: hashedPassword, role }),
-          { email, role },
-        ]);
+        res.json({ ...token });
       })
-      .then(([user, { email, role }]) =>
-        Promise.all([
-          generateToken({ id: user.id, email, role }),
-          Basket.create({ userId: user.id }),
-        ])
-      )
-      .then(([token]) => res.json({ token }))
       .catch((e) => next(e));
   }
 
@@ -54,29 +36,18 @@ class UserController {
 
     const { email, password } = req.body;
 
-    return User.findOne({ where: { email } })
-      .then((candidate) => {
-        if (!candidate) throw ApiError.internal("User not found.");
-
-        const authCheck = bcrypt.compareSync(password, candidate.password);
-
-        if (!authCheck) throw ApiError.internal("Invalid Email or password.");
-
-        const token = generateToken({
-          id: candidate.id,
-          email,
-          role: candidate.role,
-        });
-
-        res.json({ token });
+    return AuthService.login({ email, password })
+      .then((token) => {
+        res.cookie("token", token, { maxAge: 24 * 60 * 60 * 60 * 1000 });
+        res.json({ ...token });
       })
       .catch((e) => next(e));
   }
 
   check(req, res, next) {
-    const { id, email, role } = req.user;
-    const token = generateToken({ id, email, role });
-    return res.json({ token });
+    const { id } = req.user;
+    if (!id) next(ApiError.badRequest());
+    res.json(id);
   }
 }
 

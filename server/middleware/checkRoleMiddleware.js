@@ -1,12 +1,14 @@
-import jwt from "jsonwebtoken";
+import TokenService from "../services/TokenService.js";
+import ApiError from "../error/ApiError.js";
 
 function authRoleMiddleware(role) {
   return function (req, res, next) {
     const token = req.headers.authorization.split(" ")[1];
 
-    if (!token) return res.status(401).json({ message: "Not aurthorized" });
+    if (!token) throw ApiError.badRequest({ message: "Not aurthorized" });
 
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const decoded = TokenService.verifyAccessToken(token);
+    if (!decoded) throw ApiError.badRequest({ message: "Not aurthorized" });
 
     if (decoded.role !== role)
       return res.status(403).json({ message: "Forbidden" });
