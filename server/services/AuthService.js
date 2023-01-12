@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 import ApiError from "../error/ApiError.js";
 import { Basket, User } from "../models/model.js";
