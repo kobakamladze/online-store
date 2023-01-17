@@ -17,6 +17,7 @@ userRouter.post(
   body("email").notEmpty().isEmail(),
   // Validation for password
   body("password").notEmpty(),
+  // userController action
   userController.registration
 );
 
@@ -31,9 +32,16 @@ userRouter.post(
   body("email").notEmpty().isEmail(),
   // Validation of password
   body("password").notEmpty(),
-  // userController.login
-  userController.login
+  // userController action
+  userController.logIn
 );
+
+/* 
+    POST /api/user/logout
+
+    Logging in with email and password
+*/
+userRouter.get("/logout", userController.logOut);
 
 /* 
     GET /api/user/auth

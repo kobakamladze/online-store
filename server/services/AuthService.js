@@ -17,9 +17,7 @@ class AuthService {
     return User.findOne({ where: { email } })
       .then((candidate) => {
         if (candidate)
-          throw ApiError.badRequest({
-            message: "User with such Email already exists.",
-          });
+          throw ApiError.badRequest("User with such Email already exists.");
 
         const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -37,16 +35,13 @@ class AuthService {
       .then(([token]) => token);
   }
 
-  static login({ email, password }) {
+  static logIn({ email, password }) {
     return User.findOne({ where: { email } }).then((user) => {
-      if (!user)
-        throw ApiError.badRequest({
-          message: "Incorrect email or password",
-        });
+      if (!user) throw ApiError.badRequest("Incorrect email or password");
 
       const passwordCheck = bcrypt.compareSync(password, user.password);
       if (!passwordCheck)
-        throw ApiError.badRequest({ message: "Incorrect email or password" });
+        throw ApiError.badRequest("Incorrect email or password");
 
       return TokenService.generateToken({
         id: user.id,
@@ -56,7 +51,7 @@ class AuthService {
     });
   }
 
-  static auth() {}
+  static logOut() {}
 }
 
 export default AuthService;

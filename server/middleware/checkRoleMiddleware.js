@@ -5,13 +5,12 @@ function authRoleMiddleware(role) {
   return function (req, res, next) {
     const token = req.headers.authorization.split(" ")[1];
 
-    if (!token) throw ApiError.badRequest({ message: "Not aurthorized" });
+    if (!token) throw ApiError.badRequest("Not aurthorized");
 
     const decoded = TokenService.verifyAccessToken(token);
-    if (!decoded) throw ApiError.badRequest({ message: "Not aurthorized" });
+    if (!decoded) throw ApiError.badRequest("Not aurthorized");
 
-    if (decoded.role !== role)
-      return res.status(403).json({ message: "Forbidden" });
+    if (decoded.role !== role) throw ApiError.forbidden("Forbidden");
 
     req.user = decoded;
     next();

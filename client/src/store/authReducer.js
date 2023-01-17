@@ -1,22 +1,20 @@
 const defaultState = { authorized: false };
 
-const ACTION_TYPES = {
-  LOGGED_IN: "LOGGED_IN",
-  LOGGED_OUT: "LOGGED_OUT",
-};
+const LOGGED_IN = "LOGGED_IN";
+const LOGGED_OUT = "LOGGED_OUT";
 
 const authReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case ACTION_TYPES.LOGGED_IN:
-      return { ...state, userAuthStatus: true };
-    case ACTION_TYPES.LOGGED_OUT:
-      return { ...state, userAuthStatus: false };
+    case LOGGED_IN:
+      return { ...state, authorized: true };
+    case LOGGED_OUT:
+      return { ...state, authorized: false };
     default:
-      return { state };
+      return state;
   }
 };
 
-export const logInAction = () => ({ type: ACTION_TYPES.LOGGED_IN });
-export const logOutAction = () => ({ type: ACTION_TYPES.LOGGED_OUT });
+export const onLogInAction = () => ({ type: LOGGED_IN });
+export const onLogOutAction = () => ({ type: LOGGED_OUT });
 
 export default authReducer;

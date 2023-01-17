@@ -5,14 +5,14 @@ export default function (req, res, next) {
   try {
     const token = req.headers.authorization.split(" ")[1];
 
-    if (!token) throw ApiError.badRequest({ message: "Not aurthorized" });
+    if (!token) throw ApiError.badRequest("Not aurthorized");
 
     const decoded = TokenService.verifyAccessToken(token);
-    if (!decoded) throw ApiError.badRequest({ message: "Not aurthorized" });
+    if (!decoded) throw ApiError.badRequest("Not aurthorized");
 
     req.user = decoded;
     next();
   } catch (e) {
-    next(ApiError.badRequest({ message: "Not authorized" }));
+    next(ApiError.badRequest("Not authorized"));
   }
 }
