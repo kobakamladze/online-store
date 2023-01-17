@@ -3,7 +3,6 @@ import { Device } from "../models/model.js";
 
 class DeviceContorller {
   create(req, res, next) {
-    console.log(JSON.stringify(req.body));
     const {
       deviceName: name,
       price,

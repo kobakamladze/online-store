@@ -18,18 +18,24 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(
-    () =>
-      check()
-        .then((response) => {
-          const isLogged = localStorage.getItem("isLogged");
-          if (isLogged && response) return dispatch(onLogInAction());
-          return dispatch(onLogOutAction());
-        })
-        .finally(() => setLoading(false))
-        .catch(() => dispatch(onLogOutAction())),
-    []
-  );
+  // eslint-disable-next-line
+  useEffect(async () => {
+    try {
+      const response = await check();
+
+      const isLogged = localStorage.getItem("isLogged");
+      if (isLogged && response) {
+        setLoading(false);
+        return dispatch(onLogInAction());
+      }
+
+      dispatch(onLogOutAction());
+      setLoading(false);
+    } catch (e) {
+      dispatch(onLogOutAction());
+    }
+    // eslint-disable-next-line
+  }, []);
 
   if (loading)
     return (

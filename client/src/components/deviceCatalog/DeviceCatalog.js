@@ -17,6 +17,8 @@ const a = [
 ];
 
 const DeviceCatalog = () => {
+  // useEffect(() => host.get(), []);
+
   return (
     <Row className="d-flex">
       {a.map(({ name }, idx) => (
