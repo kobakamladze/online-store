@@ -18,7 +18,7 @@ deviceRouter.post("/", authRoleMiddleware("ADMIN"), deviceController.create);
 
     fetches all devices
 */
-deviceRouter.get("/", authMiddleware, deviceController.getAll);
+deviceRouter.get("/", deviceController.getAll);
 
 /*
     GET /api/device/:deviceId
