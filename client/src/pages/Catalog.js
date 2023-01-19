@@ -1,5 +1,4 @@
-import Container from "react-bootstrap/esm/Container";
-import Col from "react-bootstrap/esm/Col";
+import { Container, Col } from "react-bootstrap/esm";
 import Row from "react-bootstrap/Row";
 
 import TypeBar from "../components/typeBar/TypeBar";

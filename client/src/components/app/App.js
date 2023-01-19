@@ -12,6 +12,10 @@ import DevicePage from "../../pages/DevicePage";
 import Error from "../../pages/Error";
 import { onLogInAction, onLogOutAction } from "../../store/authReducer";
 import AdminPanel from "../../pages/AdminPanel";
+import FetchCatalogData from "../../hooks/fetchCatalogData";
+import { addTypesAction } from "../../store/typesReducer";
+import { addBrandsAction } from "../../store/brandsReducer";
+import { addDevicesAction } from "../../store/devicesReducer";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -24,22 +28,35 @@ const App = () => {
       const response = await check();
 
       const isLogged = localStorage.getItem("isLogged");
-      if (isLogged && response) {
-        setLoading(false);
-        return dispatch(onLogInAction());
+      if (!isLogged && !response) {
+        dispatch(onLogOutAction());
+        return setLoading(false);
       }
 
-      dispatch(onLogOutAction());
+      const { typesData, brandsData, devicesData } = await FetchCatalogData();
+      dispatch(addTypesAction(typesData));
+      dispatch(addBrandsAction(brandsData));
+      dispatch(addDevicesAction(devicesData));
+
+      console.log("APP.JS FETCHED DATA === " + JSON.stringify(devicesData));
+
       setLoading(false);
+      return dispatch(onLogInAction());
     } catch (e) {
       dispatch(onLogOutAction());
     }
-    // eslint-disable-next-line
   }, []);
 
   if (loading)
     return (
-      <div className="m-auto">
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Spinner animation="grow" />
       </div>
     );

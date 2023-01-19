@@ -1,4 +1,4 @@
-const defaultState = { authorized: false };
+const defaultState = false;
 
 const LOGGED_IN = "LOGGED_IN";
 const LOGGED_OUT = "LOGGED_OUT";
@@ -6,9 +6,9 @@ const LOGGED_OUT = "LOGGED_OUT";
 const authReducer = (state = defaultState, action) => {
   switch (action.type) {
     case LOGGED_IN:
-      return { ...state, authorized: true };
+      return true;
     case LOGGED_OUT:
-      return { ...state, authorized: false };
+      return false;
     default:
       return state;
   }

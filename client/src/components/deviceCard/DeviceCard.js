@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import notfound from "../../assets/notfound.jfif";
 import star from "../../assets/star.png";
 
-const DeviceCard = ({ name, id }) => {
+const DeviceCard = ({ id, name, price, rating }) => {
   return (
     <Col md={3}>
       <Link to={`/device/${id}`}>
@@ -13,11 +13,12 @@ const DeviceCard = ({ name, id }) => {
           <div className="d-flex justify-content-between align-items-center">
             <div>SAMSUNG...</div>
             <div className="text-black-50 mt-3 d-flex align-items-center">
-              <div>5</div>
+              <div>{rating || 5}</div>
               <Image src={star} height={25} alt="rating" />
             </div>
           </div>
           <div>{name}</div>
+          <div>{`${price} $`}</div>
         </Card>
       </Link>
     </Col>

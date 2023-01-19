@@ -1,18 +1,26 @@
 const defaultState = [];
 
-const authReducer = (state = defaultState, action) => {
+const ADD_TYPES = "ADD_TYPES";
+const CLEAN_TYPES = "CLEAN_TYPES";
+
+const typesReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case ACTION_TYPES.LOGGED_IN:
-      return { ...state, userAuthStatus: true };
-    case ACTION_TYPES.LOGGED_OUT:
-      return { ...state, userAuthStatus: false };
+    case ADD_TYPES:
+      return [...state, ...action.payload];
+    case CLEAN_TYPES:
+      return [];
     default:
-      return { state };
+      return state;
   }
 };
 
-export { ACTION_TYPES };
+export const addTypesAction = (payload) => ({
+  type: ADD_TYPES,
+  payload,
+});
 
-export const typesAction = (actionType) => ({ type: ACTION_TYPES.actionType });
+export const cleanTypesAction = () => ({
+  type: CLEAN_TYPES,
+});
 
-export default authReducer;
+export default typesReducer;

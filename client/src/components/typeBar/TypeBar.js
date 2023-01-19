@@ -1,11 +1,14 @@
 import { useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
+import { useSelector } from "react-redux";
 
-const typesList = [{ name: "Phones" }, { name: "Refrigerators" }];
+// const typesList = [{ name: "Phones" }, { name: "Refrigerators" }];
 
 const TypeBar = () => {
+  const { types } = useSelector((state) => state);
+
   const [buttonsList, setButtonsList] = useState(
-    typesList.map(({ name }) => ({ name, active: false }))
+    types.map(({ name }) => ({ name, active: false }))
   );
 
   const handleActiveButton = (e) =>
