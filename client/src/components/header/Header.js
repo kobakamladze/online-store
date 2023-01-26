@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
@@ -8,13 +9,17 @@ import { AUTHORIZED_ROUTES, UNAUTHORIZED_ROUTES } from "../../utils/Routes";
 
 const NavBar = () => {
   const { authorized } = useSelector((state) => state);
-  const routes = authorized ? AUTHORIZED_ROUTES : UNAUTHORIZED_ROUTES;
+
+  const [isLogged, setIsLogged] = useState(authorized);
+  const routes = isLogged ? AUTHORIZED_ROUTES : UNAUTHORIZED_ROUTES;
 
   const dispatch = useDispatch();
 
+  useEffect(() => setIsLogged(() => authorized), [authorized]);
+
   const handleLogOut = (e) => {
     e.preventDefault();
-    dispatch(onLogOutAction());
+    setIsLogged(() => false);
     return logOut();
   };
 

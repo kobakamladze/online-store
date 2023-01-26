@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+
 import DeviceCard from "../deviceCard/DeviceCard";
 
-const DeviceCatalog = () => {
-  const { devices } = useSelector((state) => state);
-
+const DeviceCatalog = ({ devices }) => {
   const [devicesList, setDevicesList] = useState(
     devices.rows.map(({ id, name, price, rating }) => ({
       id,

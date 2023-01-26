@@ -24,7 +24,10 @@ export const logOut = () => {
 };
 
 export const check = () =>
-  authHost.get("/api/user/auth").then(({ data }) => {
-    localStorage.setItem("token", data.accessToken);
-    return jwt_decode(data.accessToken);
-  });
+  authHost
+    .get("/api/user/auth")
+    .then(({ data }) => {
+      localStorage.setItem("token", data.accessToken);
+      return jwt_decode(data.accessToken);
+    })
+    .catch((e) => console.log(e));

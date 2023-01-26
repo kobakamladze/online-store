@@ -1,25 +1,71 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+  createRoutesFromElements,
+} from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import "./App.css";
-import { check } from "../../http/userAPI";
-import Header from "../header/Header";
 import Auth from "../../pages/Auth";
 import Catalog from "../../pages/Catalog";
 import DevicePage from "../../pages/DevicePage";
+import Layout from "../../pages/Layout";
 import Error from "../../pages/Error";
-import { onLogInAction, onLogOutAction } from "../../store/authReducer";
 import AdminPanel from "../../pages/AdminPanel";
-import FetchCatalogData from "../../hooks/fetchCatalogData";
-import { addTypesAction } from "../../store/typesReducer";
-import { addBrandsAction } from "../../store/brandsReducer";
-import { addDevicesAction } from "../../store/devicesReducer";
+import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
+
+import { check } from "../../http/userAPI";
+import { onLogInAction, onLogOutAction } from "../../store/authReducer";
+import { host } from "../../http";
+
+const appRouter = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />}>
+      <Route
+        path=""
+        element={<Catalog />}
+        loader={async () => {
+          const { data: types } = await host.get("/api/type");
+          const { data: brands } = await host.get("/api/brand");
+          const { data: devices } = await host.get("/api/device");
+
+          return {
+            types,
+            brands,
+            devices,
+          };
+        }}
+      />
+      <Route path="login" element={<Auth />} />
+      <Route path="registration" element={<Auth />} />
+
+      <Route
+        path="device/:deviceId"
+        element={<DevicePage />}
+        loader={async ({ params }) => {
+          const { data } = await host.get(`/api/device/${params.deviceId}`);
+          return data;
+        }}
+      />
+      <Route
+        path="adminPanel"
+        element={<AdminPanel />}
+        loader={async () => {
+          const { data: brands } = await host.get("/api/brand");
+          const { data: types } = await host.get("/api/type");
+
+          return { brands, types };
+        }}
+      />
+      <Route path="loading" element={<LoadingSpinner />} />
+      <Route path="*" element={<Error />} />
+    </Route>
+  )
+);
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
-
   const dispatch = useDispatch();
 
   // eslint-disable-next-line
@@ -28,57 +74,18 @@ const App = () => {
       const response = await check();
 
       const isLogged = localStorage.getItem("isLogged");
-      if (!isLogged && !response) {
-        dispatch(onLogOutAction());
-        return setLoading(false);
-      }
-
-      const { typesData, brandsData, devicesData } = await FetchCatalogData();
-      dispatch(addTypesAction(typesData));
-      dispatch(addBrandsAction(brandsData));
-      dispatch(addDevicesAction(devicesData));
-
-      console.log("APP.JS FETCHED DATA === " + JSON.stringify(devicesData));
-
-      setLoading(false);
-      return dispatch(onLogInAction());
+      if (isLogged && response) {
+        // setLoading(false);
+        return dispatch(onLogInAction());
+      } else dispatch(onLogOutAction());
+      // setLoading(false);
     } catch (e) {
       dispatch(onLogOutAction());
     }
+    // eslint-disable-next-line
   }, []);
 
-  if (loading)
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spinner animation="grow" />
-      </div>
-    );
-
-  return (
-    <div>
-      <Router>
-        <Header />
-        <main style={{ minHeight: "100vh", padding: "15px" }}>
-          <Routes>
-            <Route path="/" element={<Catalog />} />
-            <Route path="/login" element={<Auth />} />
-            <Route path="/registration" element={<Auth />} />
-            <Route path="/device" element={<Catalog />} />
-            <Route path="/device/:id" element={<DevicePage />} />
-            <Route path="/adminPanel" element={<AdminPanel />} />
-            <Route path="*" element={<Error />} />
-          </Routes>
-        </main>
-      </Router>
-    </div>
-  );
+  return <RouterProvider router={appRouter} />;
 };
 
 export default App;

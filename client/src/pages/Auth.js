@@ -22,11 +22,11 @@ const Auth = () => {
     if (isLogin) {
       return logIn({ email, password })
         .then((response) => {
-          navigate("/");
+          dispatch(onLogInAction());
           return response;
         })
         .catch((e) => alert(e.response.data.message))
-        .finally(() => dispatch(onLogInAction()));
+        .finally(() => navigate("/"));
     }
 
     return registration({ email, password })

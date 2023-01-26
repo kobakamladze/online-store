@@ -4,7 +4,6 @@ import TokenService from "../services/TokenService.js";
 export default function (req, res, next) {
   try {
     const token = req.headers.authorization.split(" ")[1];
-
     if (!token) throw ApiError.badRequest("Not aurthorized");
 
     const decoded = TokenService.verifyAccessToken(token);
@@ -13,6 +12,8 @@ export default function (req, res, next) {
     req.user = decoded;
     next();
   } catch (e) {
+    // TO DO
+    console.log(e);
     next(ApiError.badRequest("Not authorized"));
   }
 }

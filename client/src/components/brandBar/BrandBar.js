@@ -1,12 +1,7 @@
 import { useState } from "react";
 import ToggleButton from "react-bootstrap/ToggleButton";
-import { useSelector } from "react-redux";
 
-// const brandsList = [{ name: "Samsung" }, { name: "Lenovo" }];
-
-const BrandBar = () => {
-  const { brands } = useSelector((state) => state);
-
+const BrandBar = ({ brands }) => {
   const [buttonsList, setButtonsList] = useState(
     brands.map(({ name }) => ({ name, active: false }))
   );

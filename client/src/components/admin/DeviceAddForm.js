@@ -1,31 +1,44 @@
-import { useEffect, useState } from "react";
-import { Button, Dropdown } from "react-bootstrap/esm";
+import { useState } from "react";
+import { Button, Col, Dropdown, Row } from "react-bootstrap/esm";
 import { Form } from "react-bootstrap";
 
-import { authHost, host } from "../../http";
+import { authHost } from "../../http";
 
-const DeviceAddForm = () => {
-  const [typesList, setTypesList] = useState([]);
-  const [brandsList, setBrandsList] = useState([]);
-
+const DeviceAddForm = ({ types, brands }) => {
+  // main fields
   const [deviceName, setDeviceName] = useState("");
   const [devicePrice, setDevicePrice] = useState(0);
   const [deviceImageURL, setDeviceImageURL] = useState("");
 
+  // for dropdown lists
   const [chosenType, setChosenType] = useState({
     id: "",
     name: "",
   });
   const [chosenBrand, setChosenBrand] = useState({ id: "", name: "" });
 
-  // eslint-disable-next-line
-  useEffect(async () => {
-    const { data: typesData } = await host.get("/api/type");
-    const { data: typesBrand } = await host.get("/api/brand");
-    await setBrandsList(typesData);
-    await setTypesList(typesBrand);
-  }, []);
+  // device description
+  const [info, setInfo] = useState([]);
 
+  const addDescriptionField = (e) =>
+    setInfo((state) => [
+      ...state,
+      { propertyName: "", propertyValue: "", id: crypto.randomUUID() },
+    ]);
+
+  const deleteDescriptionField = (recievedId) =>
+    setInfo((state) => [...state.filter(({ id }) => id !== recievedId)]);
+
+  const addValueToDescriptionField = (e, recievedId) =>
+    setInfo((state) => [
+      ...state.map((field) =>
+        field.id === recievedId
+          ? { ...field, [e.target.name]: e.target.value }
+          : field
+      ),
+    ]);
+
+  // handler - submiter function
   const handleDeviceSubmit = (e) => {
     e.preventDefault();
     return authHost
@@ -76,7 +89,7 @@ const DeviceAddForm = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            {typesList.map(({ name, id }) => (
+            {types.map(({ name, id }) => (
               <Dropdown.Item
                 key={id}
                 id={id}
@@ -99,7 +112,7 @@ const DeviceAddForm = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            {brandsList.map(({ name, id }) => (
+            {brands.map(({ name, id }) => (
               <Dropdown.Item
                 key={id}
                 id={id}
@@ -115,6 +128,36 @@ const DeviceAddForm = () => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
+
+        <div className="py-1 my-2" style={{ border: "1px black" }}>
+          <Button onClick={addDescriptionField}>Add description row</Button>
+          {info.map((object, i) => (
+            <Row key={object.id} className="my-2">
+              <Col md={4}>
+                <Form.Control
+                  name="propertyName"
+                  placeholder="Enter property name"
+                  onChange={(e) => addValueToDescriptionField(e, object.id)}
+                />
+              </Col>
+              <Col md={4}>
+                <Form.Control
+                  name="propertyValue"
+                  placeholder="Enter value"
+                  onChange={(e) => addValueToDescriptionField(e, object.id)}
+                />
+              </Col>
+              <Col md={4}>
+                <Button
+                  variant="outline-danger"
+                  onClick={() => deleteDescriptionField(object.id)}
+                >
+                  Delete
+                </Button>
+              </Col>
+            </Row>
+          ))}
+        </div>
 
         <Button
           onClick={(e) => handleDeviceSubmit(e)}

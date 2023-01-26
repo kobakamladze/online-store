@@ -1,22 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Dropdown } from "react-bootstrap/esm";
 import { Form } from "react-bootstrap";
 
-import { authHost, host } from "../../http";
+import { authHost } from "../../http";
 
-const BrandAddForm = () => {
+const BrandAddForm = ({ types }) => {
   const [brandName, setBrandName] = useState("");
-  const [typesList, setTypesList] = useState([]);
   const [chosenTypeForBrand, setChosenTypeForBrand] = useState({
     id: "",
     name: "",
   });
-
-  // eslint-disable-next-line
-  useEffect(async () => {
-    const { data } = await host.get("/api/brand");
-    await setTypesList(data);
-  }, []);
 
   const handleBrandSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +42,7 @@ const BrandAddForm = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            {typesList.map(({ name, id }) => (
+            {types.map(({ name, id }) => (
               <Dropdown.Item
                 key={id}
                 id={id}
