@@ -41,6 +41,14 @@ const DeviceAddForm = ({ types, brands }) => {
   // handler - submiter function
   const handleDeviceSubmit = (e) => {
     e.preventDefault();
+
+    // transforms collection of objects into one object to add
+    const deviceInfo = info.reduce(
+      (obj, item) =>
+        Object.assign(obj, { [item.propertyName]: item.propertyValue }),
+      {}
+    );
+
     return authHost
       .post("/api/device", {
         deviceName,
@@ -48,6 +56,7 @@ const DeviceAddForm = ({ types, brands }) => {
         imageURL: deviceImageURL,
         typeId: chosenType.id,
         brandId: chosenBrand.id,
+        info: deviceInfo,
       })
       .then(() => alert("Device added"))
       .catch((e) => alert(e.response.data.message));

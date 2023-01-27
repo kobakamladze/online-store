@@ -2,4 +2,5 @@
 2. add data do db
 3. pagination
 4. filtering
-5. device infos
+5. device infos +
+6. rating logic

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Col, Container, Image, Button } from "react-bootstrap";
 import { Await, useLoaderData } from "react-router-dom";
+
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 const aboutDevice = {
@@ -27,7 +28,7 @@ const DevicePage = () => {
                   <div style={{ marginBottom: "1rem" }}>
                     <h3 style={{ fontSize: 50, padding: "1rem 0" }}>{name}</h3>
                     <p>Price: {`${price}$`}</p>
-                    <p>Raing: A</p>
+                    <p>Rating: A</p>
                   </div>
                   <Button>Add to cart</Button>
                 </Col>

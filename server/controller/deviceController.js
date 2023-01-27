@@ -7,6 +7,7 @@ class DeviceContorller {
       deviceName: name,
       price,
       rating,
+      info,
       imageURL: img,
       typeId,
       brandId,
@@ -15,7 +16,7 @@ class DeviceContorller {
     if (!name || !price || !typeId || !brandId)
       throw ApiError.badRequest("Invalid values");
 
-    return Device.create({ name, price, rating, img, typeId, brandId })
+    return Device.create({ name, price, rating, img, typeId, brandId, info })
       .then((response) => res.json(response))
       .catch((e) => next(ApiError.badRequest(e.message)));
   }

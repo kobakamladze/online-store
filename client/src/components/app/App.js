@@ -18,7 +18,9 @@ import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
 import { check } from "../../http/userAPI";
 import { onLogInAction, onLogOutAction } from "../../store/authReducer";
-import { host } from "../../http";
+import fetchBrands from "../../http/brandAPI";
+import fetchTypes from "../../http/typeAPI";
+import fetchDevices from "../../http/deviceAPI";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -27,9 +29,9 @@ const appRouter = createBrowserRouter(
         path=""
         element={<Catalog />}
         loader={async () => {
-          const { data: types } = await host.get("/api/type");
-          const { data: brands } = await host.get("/api/brand");
-          const { data: devices } = await host.get("/api/device");
+          const types = await fetchTypes();
+          const brands = await fetchBrands();
+          const devices = await fetchDevices();
 
           return {
             types,
@@ -45,7 +47,7 @@ const appRouter = createBrowserRouter(
         path="device/:deviceId"
         element={<DevicePage />}
         loader={async ({ params }) => {
-          const { data } = await host.get(`/api/device/${params.deviceId}`);
+          const data = await fetchDevices(params.deviceId);
           return data;
         }}
       />
@@ -53,8 +55,8 @@ const appRouter = createBrowserRouter(
         path="adminPanel"
         element={<AdminPanel />}
         loader={async () => {
-          const { data: brands } = await host.get("/api/brand");
-          const { data: types } = await host.get("/api/type");
+          const brands = await fetchBrands();
+          const types = await fetchTypes();
 
           return { brands, types };
         }}

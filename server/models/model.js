@@ -42,6 +42,7 @@ const Device = sequelize.define("device", {
   price: { type: DataTypes.INTEGER },
   rating: { type: DataTypes.INTEGER, defaultValue: 0 },
   img: { type: DataTypes.STRING },
+  info: { type: DataTypes.JSON },
 });
 
 const Type = sequelize.define("type", {
