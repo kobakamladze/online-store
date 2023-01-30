@@ -1,28 +1,14 @@
-import { useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 
-const TypeBar = ({ types }) => {
-  const [buttonsList, setButtonsList] = useState(
-    types.map(({ name }) => ({ name, active: false }))
-  );
-
-  const handleActiveButton = (e) =>
-    setButtonsList((state) => [
-      ...state.map((button) =>
-        button.name === e.target.textContent
-          ? { ...button, active: !button.active }
-          : { ...button, active: false }
-      ),
-    ]);
-
+const TypeBar = ({ typesButtonsList, typesButtonToggle }) => {
   return (
     <ListGroup>
-      {buttonsList.map(({ name, active }, index) => (
+      {typesButtonsList.map(({ name, active }, index) => (
         <ListGroup.Item
           style={{ cursor: "pointer" }}
           variant={active ? "secondary" : "outline-scondary"}
           key={index}
-          onClick={handleActiveButton}
+          onClick={typesButtonToggle}
         >
           {name}
         </ListGroup.Item>
