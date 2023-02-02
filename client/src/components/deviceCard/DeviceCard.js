@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import notfound from "../../assets/notfound.jfif";
 import star from "../../assets/star.png";
 
-const DeviceCard = ({ id, name, img, price, rating }) => {
+const DeviceCard = ({ device: { id, name, img, price, rating } }) => {
   return (
     <Col md={3}>
       <Link to={`/device/${id}`}>

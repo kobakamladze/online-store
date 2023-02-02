@@ -44,8 +44,6 @@ const GenerateDeviceInfoList = ({ props: info }) => {
 const DevicePage = () => {
   const data = useLoaderData();
 
-  console.log(data);
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Await resolve={data}>

@@ -3,7 +3,6 @@ import { Router } from "express";
 const deviceRouter = new Router();
 
 import deviceController from "../controller/deviceController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
 import authRoleMiddleware from "../middleware/checkRoleMiddleware.js";
 
 /*

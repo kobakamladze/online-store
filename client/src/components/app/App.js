@@ -3,6 +3,7 @@ import {
   RouterProvider,
   Route,
   createRoutesFromElements,
+  defer,
 } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -14,13 +15,12 @@ import DevicePage from "../../pages/DevicePage";
 import Layout from "../../pages/Layout";
 import Error from "../../pages/Error";
 import AdminPanel from "../../pages/AdminPanel";
-import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
 import { check } from "../../http/userAPI";
 import { onLogInAction, onLogOutAction } from "../../store/authReducer";
 import fetchBrands from "../../http/brandAPI";
 import fetchTypes from "../../http/typeAPI";
-import fetchDevices from "../../http/deviceAPI";
+import { fetchDevices, fetchDevice } from "../../http/deviceAPI";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -28,17 +28,13 @@ const appRouter = createBrowserRouter(
       <Route
         path=""
         element={<Catalog />}
-        loader={async () => {
-          const types = await fetchTypes();
-          const brands = await fetchBrands();
-          const devices = await fetchDevices();
-
-          return {
-            types,
-            brands,
-            devices,
-          };
-        }}
+        loader={async () =>
+          defer({
+            types: await fetchTypes(),
+            brands: await fetchBrands(),
+            devices: await fetchDevices(),
+          })
+        }
       />
       <Route path="login" element={<Auth />} />
       <Route path="registration" element={<Auth />} />
@@ -47,21 +43,20 @@ const appRouter = createBrowserRouter(
         path="device/:deviceId"
         element={<DevicePage />}
         loader={async ({ params }) => {
-          const data = await fetchDevices(params.deviceId);
-          return data;
+          console.log(params);
+          return defer({ data: await fetchDevice(params.deviceId) });
         }}
       />
       <Route
         path="adminPanel"
         element={<AdminPanel />}
-        loader={async () => {
-          const brands = await fetchBrands();
-          const types = await fetchTypes();
-
-          return { brands, types };
-        }}
+        loader={async () =>
+          defer({
+            brands: await fetchBrands(),
+            types: await fetchTypes(),
+          })
+        }
       />
-      <Route path="loading" element={<LoadingSpinner />} />
       <Route path="*" element={<Error />} />
     </Route>
   )

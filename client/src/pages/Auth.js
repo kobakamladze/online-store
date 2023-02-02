@@ -21,19 +21,19 @@ const Auth = () => {
   const handleSubmitAction = ({ email, password }) => {
     if (isLogin) {
       return logIn({ email, password })
-        .then((response) => {
+        .then(response => {
           dispatch(onLogInAction());
           return response;
         })
-        .catch((e) => alert(e.response.data.message))
+        .catch(e => alert(e.response.data.message))
         .finally(() => navigate("/"));
     }
 
     return registration({ email, password })
-      .then((response) => {
+      .then(response => {
         return response;
       })
-      .catch((e) => alert(e.response.data.message));
+      .catch(e => alert(e.response.data.message));
   };
 
   return (
@@ -45,7 +45,7 @@ const Auth = () => {
           <Form.Label>Email address</Form.Label>
           <Form.Control
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             type="email"
             placeholder="Enter email"
           />
@@ -55,7 +55,7 @@ const Auth = () => {
           <Form.Label>Password</Form.Label>
           <Form.Control
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
           />

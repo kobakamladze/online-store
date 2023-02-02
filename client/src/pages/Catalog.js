@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Await, useLoaderData } from "react-router-dom";
 import { Container, Col } from "react-bootstrap/esm";
 import Row from "react-bootstrap/Row";
@@ -7,48 +7,10 @@ import TypeBar from "../components/typeBar/TypeBar";
 import BrandBar from "../components/brandBar/BrandBar";
 import DeviceCatalog from "../components/deviceCatalog/DeviceCatalog";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
-
-// filters devices by typeId or brandId if none of these was provided returns unchanged object of devices
-function filterDevices({ brandIdsList = [], typeIdsList = [], devices }) {
-  let count;
-  let rows;
-
-  if (!brandIdsList.length && !typeIdsList.length) return devices;
-
-  if (brandIdsList.length && typeIdsList.length) {
-    const filteredData = devices.rows.filter(
-      device =>
-        brandIdsList.includes(device.brandId) &&
-        typeIdsList.includes(device.typeId)
-    );
-
-    rows = filteredData;
-    count = filteredData.length;
-  }
-
-  if (brandIdsList.length) {
-    const filteredData = devices.rows.filter(device =>
-      brandIdsList.includes(device.brandId)
-    );
-
-    rows = filteredData;
-    count = filteredData.length;
-  }
-
-  if (typeIdsList.length) {
-    const filteredData = devices.rows.filter(device =>
-      typeIdsList.includes(device.typeId)
-    );
-
-    rows = filteredData;
-    count = filteredData.length;
-  }
-
-  return { count, rows };
-}
+import { fetchDevices } from "../http/deviceAPI";
 
 // generates array of integers that are ids of passed list (e.g. brands, types...)
-function createListOfActiveFilterOptions(list = []) {
+function generateFilterList(list = []) {
   if (!list.length) return [];
   return list.filter(({ active }) => active).map(({ id }) => id);
 }
@@ -58,8 +20,10 @@ const Catalog = () => {
   const data = useLoaderData();
   const { brands, types, devices } = data;
 
+  const [devicesData, setDevicesData] = useState(devices);
+  const [loading, setLoading] = useState(false);
+
   // states for filtering devices by chosen types and brands
-  // const [devicesToDisplay, setDevicesToDisplay] = useState(devices.rows);
   const [brandsButtonsList, setBrandsButtonsList] = useState(
     brands.map(({ name, id }) => ({ name, id, active: false }))
   );
@@ -85,12 +49,30 @@ const Catalog = () => {
       ),
     ]);
 
-  console.log(
-    filterDevices({
-      brandIdsList: createListOfActiveFilterOptions(brandsButtonsList),
-      typeIdsList: createListOfActiveFilterOptions(typesButtonsList),
-      devices,
-    })
+  useEffect(
+    () => {
+      setLoading(true);
+      async function fetchFilteredDevices() {
+        const activeBrands = generateFilterList(brandsButtonsList);
+        const activeType = typesButtonsList.find(type => type.active)?.id || "";
+
+        const params =
+          activeBrands.length && activeType
+            ? `?brandId=${activeBrands}&typeId=${activeType}`
+            : activeBrands.length
+            ? `?brandId=${activeBrands}`
+            : activeType
+            ? `?typeId=${activeType}`
+            : "";
+
+        const newDevicesData = await fetchDevices(params);
+        setDevicesData(state => ({ ...state, ...newDevicesData }));
+        setLoading(false);
+      }
+      fetchFilteredDevices();
+    },
+    // eslint-disable-next-line
+    [JSON.stringify(typesButtonsList), JSON.stringify(brandsButtonsList)]
   );
 
   return (
@@ -111,15 +93,11 @@ const Catalog = () => {
                   brandsButtonsList={brandsButtonsList}
                   brandsButtonToggle={brandsButtonToggle}
                 />
-                <DeviceCatalog
-                  devices={filterDevices({
-                    brandIdsList:
-                      createListOfActiveFilterOptions(brandsButtonsList),
-                    typeIdsList:
-                      createListOfActiveFilterOptions(typesButtonsList),
-                    devices,
-                  })}
-                />
+                {loading ? (
+                  <LoadingSpinner />
+                ) : (
+                  <DeviceCatalog devices={devicesData} loading={loading} />
+                )}
               </Col>
             </Row>
           </Container>
