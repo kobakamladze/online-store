@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useState } from "react";
-import { Await, useLoaderData } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLoaderData } from "react-router-dom";
 import { Container, Col } from "react-bootstrap/esm";
 import Row from "react-bootstrap/Row";
 
@@ -16,11 +16,11 @@ function generateFilterList(list = []) {
 }
 
 const Catalog = () => {
-  // Recieving data from server (brands, types, devices)
   const data = useLoaderData();
   const { brands, types, devices } = data;
 
   const [devicesData, setDevicesData] = useState(devices);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   // states for filtering devices by chosen types and brands
@@ -31,7 +31,8 @@ const Catalog = () => {
     types.map(({ id, name }) => ({ id, name, active: false }))
   );
 
-  const brandsButtonToggle = e =>
+  const brandsButtonToggle = e => {
+    setPage(1);
     setBrandsButtonsList(state => [
       ...state.map(button =>
         button.name === e.target.textContent
@@ -39,8 +40,10 @@ const Catalog = () => {
           : button
       ),
     ]);
+  };
 
-  const typesButtonToggle = e =>
+  const typesButtonToggle = e => {
+    setPage(1);
     setTypesButtonsList(state => [
       ...state.map(button =>
         button.name === e.target.textContent
@@ -48,62 +51,54 @@ const Catalog = () => {
           : { ...button, active: false }
       ),
     ]);
+  };
 
+  // useEffect is being called on selecting brand, type or new next page
   useEffect(
     () => {
       setLoading(true);
       async function fetchFilteredDevices() {
-        const activeBrands = generateFilterList(brandsButtonsList);
-        const activeType = typesButtonsList.find(type => type.active)?.id || "";
+        const brandIds = generateFilterList(brandsButtonsList);
+        const typeId = typesButtonsList.find(type => type.active)?.id || "";
 
-        const params =
-          activeBrands.length && activeType
-            ? `?brandId=${activeBrands}&typeId=${activeType}`
-            : activeBrands.length
-            ? `?brandId=${activeBrands}`
-            : activeType
-            ? `?typeId=${activeType}`
-            : "";
-
-        const newDevicesData = await fetchDevices(params);
+        const newDevicesData = await fetchDevices(brandIds, typeId, page);
         setDevicesData(state => ({ ...state, ...newDevicesData }));
         setLoading(false);
       }
       fetchFilteredDevices();
     },
     // eslint-disable-next-line
-    [JSON.stringify(typesButtonsList), JSON.stringify(brandsButtonsList)]
+    [JSON.stringify(typesButtonsList), JSON.stringify(brandsButtonsList), page]
   );
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Await resolve={data}>
-        {() => (
-          <Container>
-            <Row>
-              <Col md={3}>
-                <TypeBar
-                  typesButtonsList={typesButtonsList}
-                  typesButtonToggle={typesButtonToggle}
-                />
-              </Col>
+    <Container>
+      <Row>
+        <Col md={3}>
+          <TypeBar
+            typesButtonsList={typesButtonsList}
+            typesButtonToggle={typesButtonToggle}
+          />
+        </Col>
 
-              <Col md={9}>
-                <BrandBar
-                  brandsButtonsList={brandsButtonsList}
-                  brandsButtonToggle={brandsButtonToggle}
-                />
-                {loading ? (
-                  <LoadingSpinner />
-                ) : (
-                  <DeviceCatalog devices={devicesData} loading={loading} />
-                )}
-              </Col>
-            </Row>
-          </Container>
-        )}
-      </Await>
-    </Suspense>
+        <Col md={9}>
+          <BrandBar
+            brandsButtonsList={brandsButtonsList}
+            brandsButtonToggle={brandsButtonToggle}
+          />
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <DeviceCatalog
+              devices={devicesData}
+              loading={loading}
+              page={page}
+              setPage={setPage}
+            />
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

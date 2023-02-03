@@ -1,8 +1,16 @@
 import { host } from ".";
 
-const fetchDevices = async (params = "") => {
+const fetchDevices = async (brandIds = [], typeId = "", page = 1) => {
+  const paramsObj = {};
+
+  if (brandIds.length) paramsObj.brandId = brandIds.join(",");
+  if (typeId) paramsObj.typeId = typeId;
+  if (page > 1) paramsObj.page = page;
+
+  const searchParams = `?${new URLSearchParams(paramsObj).toString()}`;
+
   const data = await host
-    .get(`/api/device${params}`)
+    .get(`/api/device${searchParams}`)
     .then(({ data }) => data)
     .catch(e => console.log(e))
     .finally();

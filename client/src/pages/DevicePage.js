@@ -42,7 +42,7 @@ const GenerateDeviceInfoList = ({ props: info }) => {
 };
 
 const DevicePage = () => {
-  const data = useLoaderData();
+  const { data } = useLoaderData();
 
   return (
     <Suspense fallback={<LoadingSpinner />}>

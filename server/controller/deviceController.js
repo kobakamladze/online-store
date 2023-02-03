@@ -25,8 +25,6 @@ class DeviceContorller {
   getAll(req, res) {
     const { brandId, typeId, limit = 9, page = 1 } = req.query;
 
-    console.log("BRAND ID RECIEVED === " + JSON.stringify(brandId));
-
     const brandIdsList = brandId ? brandId.split(",") : null;
     const typeIdsList = typeId ? typeId.split(",") : null;
 
@@ -53,8 +51,6 @@ class DeviceContorller {
         where: { typeId: { [Op.or]: typeIdsList } },
         ...queryParams,
       };
-
-    console.log("QUEERYYY PAARAAMSSS === " + JSON.stringify(queryParams));
 
     return Device.findAndCountAll(queryParams).then(response =>
       res.json(response)

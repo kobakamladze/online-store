@@ -28,13 +28,11 @@ const appRouter = createBrowserRouter(
       <Route
         path=""
         element={<Catalog />}
-        loader={async () =>
-          defer({
-            types: await fetchTypes(),
-            brands: await fetchBrands(),
-            devices: await fetchDevices(),
-          })
-        }
+        loader={async () => ({
+          types: await fetchTypes(),
+          brands: await fetchBrands(),
+          devices: await fetchDevices(),
+        })}
       />
       <Route path="login" element={<Auth />} />
       <Route path="registration" element={<Auth />} />
@@ -42,10 +40,7 @@ const appRouter = createBrowserRouter(
       <Route
         path="device/:deviceId"
         element={<DevicePage />}
-        loader={async ({ params }) => {
-          console.log(params);
-          return defer({ data: await fetchDevice(params.deviceId) });
-        }}
+        loader={({ params }) => defer({ data: fetchDevice(params.deviceId) })}
       />
       <Route
         path="adminPanel"
@@ -65,22 +60,27 @@ const appRouter = createBrowserRouter(
 const App = () => {
   const dispatch = useDispatch();
 
-  // eslint-disable-next-line
-  useEffect(async () => {
-    try {
-      const response = await check();
+  useEffect(
+    () => {
+      async function checkAuth() {
+        try {
+          const response = await check();
 
-      const isLogged = localStorage.getItem("isLogged");
-      if (isLogged && response) {
-        // setLoading(false);
-        return dispatch(onLogInAction());
-      } else dispatch(onLogOutAction());
-      // setLoading(false);
-    } catch (e) {
-      dispatch(onLogOutAction());
-    }
+          const isLogged = localStorage.getItem("isLogged");
+          if (isLogged && response) {
+            // setLoading(false);
+            return dispatch(onLogInAction());
+          } else dispatch(onLogOutAction());
+          // setLoading(false);
+        } catch (e) {
+          dispatch(onLogOutAction());
+        }
+      }
+      checkAuth();
+    },
     // eslint-disable-next-line
-  }, []);
+    []
+  );
 
   return <RouterProvider router={appRouter} />;
 };
