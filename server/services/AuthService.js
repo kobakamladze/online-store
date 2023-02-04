@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import bcrypt from "bcrypt";
 
 import ApiError from "../error/ApiError.js";
-import { Basket, User } from "../models/model.js";
+import { Cart, User } from "../models/model.js";
 import TokenService from "./TokenService.js";
 
 config();
@@ -15,7 +15,7 @@ const ROLES = {
 class AuthService {
   static registration({ email, password, role = ROLES.USER }) {
     return User.findOne({ where: { email } })
-      .then((candidate) => {
+      .then(candidate => {
         if (candidate)
           throw ApiError.badRequest("User with such Email already exists.");
 
@@ -29,14 +29,14 @@ class AuthService {
       .then(([user, { email, role }]) =>
         Promise.all([
           TokenService.generateToken({ id: user.id, email, role }),
-          Basket.create({ userId: user.id }),
+          Cart.create({ userId: user.id }),
         ])
       )
       .then(([token]) => token);
   }
 
   static logIn({ email, password }) {
-    return User.findOne({ where: { email } }).then((user) => {
+    return User.findOne({ where: { email } }).then(user => {
       if (!user) throw ApiError.badRequest("Incorrect email or password");
 
       const passwordCheck = bcrypt.compareSync(password, user.password);

@@ -16,7 +16,7 @@ class UserController {
     const { email, password, role } = req.body;
 
     return AuthService.registration({ email, password, role })
-      .then((token) => {
+      .then(token => {
         res.cookie("token", token, {
           maxAge: 24 * 60 * 60 * 60 * 1000,
           httpOnly: true,
@@ -24,7 +24,8 @@ class UserController {
 
         res.json({ ...token });
       })
-      .catch((e) => next(e));
+      .catch(e => next(e))
+      .finally();
   }
 
   // Log in function
@@ -38,15 +39,16 @@ class UserController {
     const { email, password } = req.body;
 
     return AuthService.logIn({ email, password })
-      .then((token) => {
+      .then(token => {
         res.cookie("token", token, { maxAge: 24 * 60 * 60 * 60 * 1000 });
         res.json({ ...token });
       })
-      .catch((e) => next(e));
+      .catch(e => next(e))
+      .finally();
   }
 
   // Log out function
-  logOut(req, res, next) {
+  logOut(req, res) {
     res.clearCookie("token");
     res.json("Logged out");
   }

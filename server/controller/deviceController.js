@@ -19,7 +19,8 @@ class DeviceContorller {
 
     return Device.create({ name, price, rating, img, typeId, brandId, info })
       .then(response => res.json(response))
-      .catch(e => next(ApiError.badRequest(e.message)));
+      .catch(e => next(ApiError.badRequest(e.message)))
+      .finally();
   }
 
   getAll(req, res) {
@@ -52,16 +53,16 @@ class DeviceContorller {
         ...queryParams,
       };
 
-    return Device.findAndCountAll(queryParams).then(response =>
-      res.json(response)
-    );
+    return Device.findAndCountAll(queryParams)
+      .then(response => res.json(response))
+      .finally();
   }
 
   getOne(req, res) {
     const id = req.params.id;
-    return Device.findOne({ where: { id } }).then(response =>
-      res.json(response)
-    );
+    return Device.findOne({ where: { id } })
+      .then(response => res.json(response))
+      .finally();
   }
 }
 

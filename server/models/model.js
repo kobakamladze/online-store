@@ -13,7 +13,7 @@ const User = sequelize.define("user", {
   role: { type: DataTypes.STRING, defaultValue: "USER" },
 });
 
-const Basket = sequelize.define("basket", {
+const Cart = sequelize.define("cart", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -22,7 +22,7 @@ const Basket = sequelize.define("basket", {
   },
 });
 
-const BasketDevice = sequelize.define("basket_device", {
+const CartDevice = sequelize.define("cart_device", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -75,17 +75,6 @@ const Rating = sequelize.define("rating", {
   rate: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-const DeviceInfo = sequelize.define("device_info", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    unique: true,
-    autoIncrement: true,
-  },
-  title: { type: DataTypes.STRING, allowNull: false },
-  description: { type: DataTypes.STRING, allowNull: false },
-});
-
 const TypeBrand = sequelize.define("type_brand", {
   id: {
     type: DataTypes.INTEGER,
@@ -95,14 +84,14 @@ const TypeBrand = sequelize.define("type_brand", {
   },
 });
 
-User.hasOne(Basket);
-Basket.belongsTo(User);
+User.hasOne(Cart);
+Cart.belongsTo(User);
 
 User.hasMany(Rating);
 Rating.belongsTo(User);
 
-Basket.hasMany(BasketDevice);
-BasketDevice.belongsTo(Basket);
+Cart.hasMany(CartDevice);
+CartDevice.belongsTo(Cart);
 
 Type.hasMany(Device);
 Device.belongsTo(Type);
@@ -113,37 +102,10 @@ Device.belongsTo(Brand);
 Device.hasMany(Rating);
 Rating.belongsTo(Device);
 
-Device.hasOne(BasketDevice);
-BasketDevice.belongsTo(Device);
-
-Device.hasMany(DeviceInfo);
-DeviceInfo.belongsTo(Device);
+Device.hasOne(CartDevice);
+CartDevice.belongsTo(Device);
 
 Type.belongsToMany(Brand, { through: TypeBrand });
 Brand.belongsToMany(Type, { through: TypeBrand });
 
-const models = {
-  User,
-  Basket,
-  BasketDevice,
-  Rating,
-  Device,
-  DeviceInfo,
-  Type,
-  Brand,
-  TypeBrand,
-};
-
-export default models;
-
-export {
-  User,
-  Basket,
-  BasketDevice,
-  Rating,
-  Device,
-  DeviceInfo,
-  Type,
-  Brand,
-  TypeBrand,
-};
+export { User, Cart, CartDevice, Rating, Device, Type, Brand, TypeBrand };

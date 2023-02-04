@@ -47,7 +47,7 @@ const DevicePage = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Await resolve={data}>
-        {({ name, price, img, rating }) => {
+        {({ name, price, img, rating, info }) => {
           return (
             <>
               <Container className="mt-4 d-flex justify-content-between">
@@ -56,15 +56,28 @@ const DevicePage = () => {
                 </Col>
                 <Col md={6} className="d-flex flex-column p-2">
                   <div style={{ marginBottom: "1rem" }}>
-                    <h3 style={{ fontSize: 50, padding: "1rem 0" }}>{name}</h3>
-                    <p>Price: {`${price}$`}</p>
+                    <h3
+                      style={{
+                        fontSize: 50,
+                        padding: "1rem 0",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {name}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: "30px",
+                        fontWeight: 700,
+                      }}
+                    >{`$ ${price}`}</p>
                     <p>Rating: {rating}</p>
                   </div>
                   <Button>Add to cart</Button>
                 </Col>
               </Container>
               <Container>
-                <GenerateDeviceInfoList props={data.info} />
+                <GenerateDeviceInfoList props={info} />
               </Container>
             </>
           );
