@@ -6,21 +6,21 @@ import cartController from "../controller/cartController.js";
 const cartRouter = Router();
 
 /* 
-    GET /api/cart
+    GET /api/cart/:userid
 
     Fetches all devices of user
 */
 cartRouter.get("/:userId", authMiddleware, cartController.getAll);
 
 /*
-    POST /api/cart/add
+    POST /api/cart/add/:userId
 
     Adds device to cart
 */
-cartRouter.post("/add/:userId", authMiddleware, cartController.create);
+cartRouter.post("/add/:deviceId", authMiddleware, cartController.add);
 
 /*
-    DELETE /api/cart
+    DELETE /api/cart/delete/:deviceId
 
     Deletes device from cart
 */

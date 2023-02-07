@@ -12,8 +12,6 @@ const brandsReducer = (state = defaultState, action) => {
 };
 
 export const addBrandAction = payload => {
-  console.log(payload.filter(brand => brand.active));
-
   return {
     type: ADD_BRANDS,
     payload,

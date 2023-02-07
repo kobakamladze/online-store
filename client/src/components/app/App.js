@@ -21,6 +21,8 @@ import { onLogInAction, onLogOutAction } from "../../store/authReducer";
 import fetchBrands from "../../http/brandAPI";
 import fetchTypes from "../../http/typeAPI";
 import { fetchDevices, fetchDevice } from "../../http/deviceAPI";
+import CartPage from "../../pages/CartPage";
+import { fetchCartItems } from "../../http/cartAPI";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -43,7 +45,12 @@ const appRouter = createBrowserRouter(
         loader={({ params }) => defer({ data: fetchDevice(params.deviceId) })}
       />
       <Route
-        path="adminPanel"
+        path="cart/:userId"
+        element={<CartPage />}
+        loader={({ params }) => fetchCartItems(params.userId)}
+      />
+      <Route
+        path="admin-panel"
         element={<AdminPanel />}
         loader={async () =>
           defer({
@@ -64,14 +71,14 @@ const App = () => {
     () => {
       async function checkAuth() {
         try {
-          const response = await check();
-
+          const { id, email } = await check();
           const isLogged = localStorage.getItem("isLogged");
-          if (isLogged && response) {
-            // setLoading(false);
-            return dispatch(onLogInAction());
-          } else dispatch(onLogOutAction());
-          // setLoading(false);
+
+          if (isLogged && id && email) {
+            return dispatch(onLogInAction({ id, email }));
+          } else {
+            dispatch(onLogOutAction());
+          }
         } catch (e) {
           dispatch(onLogOutAction());
         }

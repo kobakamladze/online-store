@@ -1,11 +1,10 @@
-import { Container, Button } from "react-bootstrap/esm";
-import { Form, Card } from "react-bootstrap";
-
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { logIn, registration } from "../http/userAPI";
 import { useDispatch } from "react-redux";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Form, Card } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap/esm";
 
+import { logIn, registration } from "../http/userAPI";
 import { onLogInAction } from "../store/authReducer";
 
 const Auth = () => {
@@ -22,10 +21,10 @@ const Auth = () => {
     if (isLogin) {
       return logIn({ email, password })
         .then(response => {
-          dispatch(onLogInAction());
+          dispatch(onLogInAction({ id: response.id, email: response.email }));
           return response;
         })
-        .catch(e => alert(e.response.data.message))
+        .catch(e => console.log(e))
         .finally(() => navigate("/"));
     }
 

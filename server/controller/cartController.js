@@ -1,12 +1,16 @@
 import { Cart, CartDevice, Device } from "../models/model.js";
 
 class CartController {
-  create(req, res, next) {
-    const userId = req.params.userId;
-    const deviceId = req.body.deviceId;
+  add(req, res, next) {
+    const deviceId = req.params.deviceId;
+    const userId = req.body.userId;
 
     return Cart.findOne({ where: { userId: parseInt(userId) } })
-      .then(cart => CartDevice.create({ deviceId, cartId: cart.id }))
+      .then(cart => {
+        // TO DO
+        if (cart) throw next("Device already added to cart");
+        return CartDevice.create({ deviceId, cartId: cart.id });
+      })
       .then(response => res.json(response))
       .catch(e => next(e))
       .finally();

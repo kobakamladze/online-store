@@ -20,7 +20,7 @@ export const logIn = ({ email, password }) =>
 
 export const logOut = () => {
   localStorage.clear();
-  return authHost.get("/api/user/logout").catch((e) => console.log(e));
+  return authHost.get("/api/user/logout").catch(e => console.log(e));
 };
 
 export const check = () =>
@@ -30,4 +30,4 @@ export const check = () =>
       localStorage.setItem("token", data.accessToken);
       return jwt_decode(data.accessToken);
     })
-    .catch((e) => console.log(e));
+    .catch(e => console.log(e));
