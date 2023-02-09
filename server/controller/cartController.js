@@ -2,13 +2,23 @@ import { Cart, CartDevice, Device } from "../models/model.js";
 
 class CartController {
   add(req, res, next) {
-    const deviceId = req.params.deviceId;
-    const userId = req.body.userId;
+    const deviceId = parseInt(req.params.deviceId);
+    const userId = parseInt(req.body.userId);
 
-    return Cart.findOne({ where: { userId: parseInt(userId) } })
+    console.log(deviceId, userId);
+
+    return Cart.findOne({
+      where: { userId },
+      include: [{ model: CartDevice, include: [{ model: Device }] }],
+    })
       .then(cart => {
-        // TO DO
-        if (cart) throw next("Device already added to cart");
+        // check if device is already added to users container
+        const deviceAlreadyBeenAddedToCard = cart["cart_devices"]
+          .map(({ device }) => device)
+          .some(cartDevice => cartDevice.id === deviceId);
+
+        if (deviceAlreadyBeenAddedToCard)
+          throw next("Device already added to cart");
         return CartDevice.create({ deviceId, cartId: cart.id });
       })
       .then(response => res.json(response))
