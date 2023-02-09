@@ -21,8 +21,6 @@ const deleteCartItem = async ({ userId, deviceId }) => {
 };
 
 const addItemToCart = async ({ userId, deviceId }) => {
-  console.log(userId, deviceId);
-
   const data = await authHost
     .post(`/api/cart/add/${deviceId}`, { userId })
     .then(({ data }) => data)

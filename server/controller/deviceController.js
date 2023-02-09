@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import ApiError from "../error/ApiError.js";
-import { Device } from "../models/model.js";
+import { Brand, Device, Type } from "../models/model.js";
 
 class DeviceContorller {
   create(req, res, next) {
@@ -30,7 +30,11 @@ class DeviceContorller {
     const typeIdsList = typeId ? typeId.split(",") : null;
 
     let offset = page * limit - limit;
-    let queryParams = { offset, limit };
+    let queryParams = {
+      offset,
+      limit,
+      include: [{ model: Brand, attributes: ["name"] }],
+    };
 
     if (brandId && typeId)
       queryParams = {
@@ -59,9 +63,15 @@ class DeviceContorller {
   }
 
   getOne(req, res) {
-    const id = req.params.id;
-    return Device.findOne({ where: { id } })
-      .then(response => res.json(response))
+    const id = req.params.deviceId;
+    return Device.findOne({
+      where: { id },
+      include: [
+        { model: Brand, attributes: ["name"] },
+        { model: Type, attributes: ["name"] },
+      ],
+    })
+      .then(device => res.json(device))
       .finally();
   }
 }

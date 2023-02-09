@@ -1,7 +1,8 @@
-1. cart for users
-2. add data do db +-
-3. pagination+
-4. filtering+
-5. device infos +
-6. rating logic
-7. add more styles
+1. Cart for users
+2. Add data do db +-
+3. Pagination+
+4. Filtering+
+5. Device infos +
+6. Rating logic
+7. Add more styles
+8. Endpoint protection

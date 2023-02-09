@@ -24,6 +24,6 @@ deviceRouter.get("/", deviceController.getAll);
 
     Fetches one device found by deviceId
 */
-deviceRouter.get("/:id", deviceController.getOne);
+deviceRouter.get("/:deviceId", deviceController.getOne);
 
 export default deviceRouter;

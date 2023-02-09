@@ -58,7 +58,16 @@ const DevicePage = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Await resolve={data}>
-        {({ id, name, price, img, rating, info }) => (
+        {({
+          id,
+          name,
+          price,
+          img,
+          rating,
+          info,
+          brand: { name: brandName },
+          type: { name: typeName },
+        }) => (
           <>
             <Container className="mt-4 d-flex justify-content-between">
               <Col md={6} className="d-flex justify-content-center">
@@ -75,13 +84,15 @@ const DevicePage = () => {
                   >
                     {name}
                   </h3>
+                  <p>Type: {typeName}</p>
+                  <p>Brand: {brandName}</p>
+                  <p>Rating: {rating}</p>
                   <p
                     style={{
                       fontSize: "30px",
                       fontWeight: 700,
                     }}
                   >{`$ ${price}`}</p>
-                  <p>Rating: {rating}</p>
                 </div>
                 <Button
                   onClick={e =>
