@@ -1,5 +1,6 @@
 import { Card, Col, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useSpring, animated } from "react-spring";
 
 import notfound from "../../assets/notfound.jfif";
 import star from "../../assets/star.png";
@@ -16,12 +17,17 @@ const DeviceCard = ({
 }) => {
   const navigate = useNavigate();
 
+  const mountStyle = useSpring({
+    from: { opacity: 0, y: -24 },
+    to: { opacity: 1, y: 0 },
+  });
+
   const handleCardNavigate = () => navigate(`/device/${id}`);
 
   return (
     <Col md={3}>
-      <div
-        style={{ cursor: "pointer", margin: "0.8rem 0" }}
+      <animated.div
+        style={{ cursor: "pointer", margin: "0.8rem 0", ...mountStyle }}
         onClick={handleCardNavigate}
       >
         <Card className="mt-3 p-2">
@@ -54,7 +60,7 @@ const DeviceCard = ({
             >{`Price: $${price}`}</p>
           </>
         </Card>
-      </div>
+      </animated.div>
     </Col>
   );
 };

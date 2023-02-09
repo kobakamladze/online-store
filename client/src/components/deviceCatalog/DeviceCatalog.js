@@ -8,12 +8,17 @@ const DeviceCardsList = ({ devicesList }) => {
   ));
 };
 
+const CatalogPagination = ({ paginationItems }) =>
+  !(paginationItems.length > 1) ? null : (
+    <Pagination className="my-4 me-0">{paginationItems}</Pagination>
+  );
+
 const DeviceCatalog = ({ devices, page, setPage }) => {
   const pagesAmount = Math.ceil(devices.count / 9);
-  const paginationItem = [];
+  const paginationItems = [];
 
   for (let number = 1; number <= pagesAmount; number++) {
-    paginationItem.push(
+    paginationItems.push(
       <Pagination.Item
         key={number}
         onClick={() => setPage(number)}
@@ -25,13 +30,12 @@ const DeviceCatalog = ({ devices, page, setPage }) => {
   }
 
   if (!devices.rows.length) return <h3>No data found</h3>;
+
   return (
     <>
       <Row className="d-flex">
         <DeviceCardsList devicesList={devices.rows} />
-        {!(paginationItem.length > 1) ? null : (
-          <Pagination className="my-4 me-0">{paginationItem}</Pagination>
-        )}
+        <CatalogPagination paginationItems={paginationItems} />
       </Row>
     </>
   );

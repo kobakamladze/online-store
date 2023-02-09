@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Col, Container, Image, Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Await, useLoaderData, useNavigate } from "react-router-dom";
+import { animated, useSpring } from "react-spring";
 
 import notfound from "../assets/notfound.jfif";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
@@ -47,6 +48,7 @@ const DevicePage = () => {
   const navigate = useNavigate();
   const { data } = useLoaderData();
   const { authorized } = useSelector(state => state);
+  const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const handleAddToCart = (e, { userId, deviceId }) => {
     e.preventDefault();
@@ -68,7 +70,7 @@ const DevicePage = () => {
           brand: { name: brandName },
           type: { name: typeName },
         }) => (
-          <>
+          <animated.div style={mountStyle}>
             <Container className="mt-4 d-flex justify-content-between">
               <Col md={6} className="d-flex justify-content-center">
                 <Image height={500} src={img} alt={notfound} />
@@ -106,7 +108,7 @@ const DevicePage = () => {
             <Container>
               <GenerateDeviceInfoList props={info} />
             </Container>
-          </>
+          </animated.div>
         )}
       </Await>
     </Suspense>

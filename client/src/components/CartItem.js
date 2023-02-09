@@ -1,11 +1,13 @@
 import { Button, Image } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { animated, useSpring } from "react-spring";
 import { deleteCartItem } from "../http/cartAPI";
 
 const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
   const navigate = useNavigate();
   const { authorized } = useSelector(state => state);
+  const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const removeDeviceFromCart = (e, { userId, deviceId }) => {
     e.preventDefault();
@@ -16,7 +18,10 @@ const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
 
   return (
     <li style={{ margin: "1 rem 0" }}>
-      <div className="d-flex justify-content-between align-items-center px-5 my-2 border w-100">
+      <animated.div
+        className="d-flex justify-content-between align-items-center px-5 my-2 border w-100"
+        style={{ ...mountStyle }}
+      >
         <div>
           <Image src={img} style={{ height: "140px" }} />
         </div>
@@ -41,7 +46,7 @@ const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
             X
           </Button>
         </div>
-      </div>
+      </animated.div>
     </li>
   );
 };
