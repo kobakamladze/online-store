@@ -1,30 +1,43 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useContext, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Form, Card } from "react-bootstrap";
 import { Container, Button } from "react-bootstrap/esm";
 
 import { logIn, registration } from "../http/userAPI";
-import { onLogInAction } from "../store/authReducer";
+import { AuthorizedContext } from "../components/app/App";
 
 const Auth = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const setAuthorized = useContext(AuthorizedContext)[1];
 
   const { pathname } = useLocation();
   const isLogin = pathname === "/login";
 
-  const handleSubmitAction = ({ email, password }) => {
+  const handleSubmitAction = (e, { email, password }) => {
+    e.preventDefault();
+
     if (isLogin) {
       return logIn({ email, password })
         .then(response => {
-          dispatch(onLogInAction({ id: response.id, email: response.email }));
-          return response;
+          const id = response?.id;
+          const email = response?.email;
+          const role = response?.role;
+
+          if (id && email && role) {
+            return setAuthorized(() => ({
+              id,
+              email,
+              role,
+            }));
+          }
         })
-        .catch(e => console.log(e))
+        .catch(e => {
+          console.log(e);
+          return navigate(0);
+        })
         .finally(() => navigate("/"));
     }
 
@@ -81,7 +94,7 @@ const Auth = () => {
           <Button
             variant="primary"
             type="submit"
-            onClick={() => handleSubmitAction({ email, password })}
+            onClick={e => handleSubmitAction(e, { email, password })}
           >
             {isLogin ? "Log In" : "Register"}
           </Button>

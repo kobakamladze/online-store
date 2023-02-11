@@ -1,10 +1,10 @@
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 import { Col, Container, Image, Button } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import { Await, useLoaderData, useNavigate } from "react-router-dom";
 import { animated, useSpring } from "react-spring";
 
 import notfound from "../assets/notfound.jfif";
+import { AuthorizedContext } from "../components/app/App";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 import { addItemToCart } from "../http/cartAPI";
 
@@ -47,7 +47,7 @@ const GenerateDeviceInfoList = ({ props: info }) => {
 const DevicePage = () => {
   const navigate = useNavigate();
   const { data } = useLoaderData();
-  const { authorized } = useSelector(state => state);
+  const [authorized] = useContext(AuthorizedContext);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const handleAddToCart = (e, { userId, deviceId }) => {

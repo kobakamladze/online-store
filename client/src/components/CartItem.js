@@ -1,12 +1,14 @@
+import { useContext } from "react";
 import { Button, Image } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { animated, useSpring } from "react-spring";
+
 import { deleteCartItem } from "../http/cartAPI";
+import { AuthorizedContext } from "./app/App";
 
 const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
   const navigate = useNavigate();
-  const { authorized } = useSelector(state => state);
+  const [authorized] = useContext(AuthorizedContext);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const removeDeviceFromCart = (e, { userId, deviceId }) => {

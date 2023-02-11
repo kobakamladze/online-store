@@ -5,8 +5,7 @@ import {
   createRoutesFromElements,
   defer,
 } from "react-router-dom";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { createContext, useState } from "react";
 
 import "./App.css";
 import Auth from "../../pages/Auth";
@@ -17,16 +16,32 @@ import Error from "../../pages/Error";
 import AdminPanel from "../../pages/AdminPanel";
 
 import { check } from "../../http/userAPI";
-import { onLogInAction, onLogOutAction } from "../../store/authReducer";
 import fetchBrands from "../../http/brandAPI";
 import fetchTypes from "../../http/typeAPI";
 import { fetchDevices, fetchDevice } from "../../http/deviceAPI";
 import CartPage from "../../pages/CartPage";
 import { fetchCartItems } from "../../http/cartAPI";
+import AuthRoute from "../../routes/AurthRoute";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout />}>
+    <Route
+      path="/"
+      element={<Layout />}
+      loader={async () => {
+        try {
+          const authCheck = await check();
+          const id = authCheck?.id;
+          const email = authCheck?.email;
+
+          console.log(authCheck);
+
+          return id && email ? authCheck : null;
+        } catch (e) {
+          console.log(e);
+        }
+      }}
+    >
       <Route
         path=""
         element={<Catalog />}
@@ -36,60 +51,52 @@ const appRouter = createBrowserRouter(
           devices: await fetchDevices(),
         })}
       />
-      <Route path="login" element={<Auth />} />
-      <Route path="registration" element={<Auth />} />
-
       <Route
         path="device/:deviceId"
         element={<DevicePage />}
         loader={({ params }) => defer({ data: fetchDevice(params.deviceId) })}
       />
-      <Route
-        path="cart/:userId"
-        element={<CartPage />}
-        loader={({ params }) => fetchCartItems(params.userId)}
-      />
-      <Route
-        path="admin-panel"
-        element={<AdminPanel />}
-        loader={async () =>
-          defer({
-            brands: await fetchBrands(),
-            types: await fetchTypes(),
-          })
-        }
-      />
+
+      <Route path="login" element={<Auth />} />
+      <Route path="registration" element={<Auth />} />
+
+      <Route element={<AuthRoute />} loader={() => check()}>
+        <Route
+          path="cart/:userId"
+          element={<CartPage />}
+          loader={({ params }) => fetchCartItems(params.userId)}
+        />
+        <Route
+          path="admin-panel"
+          element={<AdminPanel />}
+          loader={async () =>
+            defer({
+              brands: await fetchBrands(),
+              types: await fetchTypes(),
+            })
+          }
+        />
+      </Route>
+
       <Route path="*" element={<Error />} />
     </Route>
   )
 );
 
+export const AuthorizedContext = createContext();
+
 const App = () => {
-  const dispatch = useDispatch();
+  const [authorized, setAuthorized] = useState({
+    id: null,
+    email: null,
+    role: null,
+  });
 
-  useEffect(
-    () => {
-      async function checkAuth() {
-        try {
-          const { id, email } = await check();
-          const isLogged = localStorage.getItem("isLogged");
-
-          if (isLogged && id && email) {
-            return dispatch(onLogInAction({ id, email }));
-          } else {
-            dispatch(onLogOutAction());
-          }
-        } catch (e) {
-          dispatch(onLogOutAction());
-        }
-      }
-      checkAuth();
-    },
-    // eslint-disable-next-line
-    []
+  return (
+    <AuthorizedContext.Provider value={[authorized, setAuthorized]}>
+      <RouterProvider router={appRouter} />
+    </AuthorizedContext.Provider>
   );
-
-  return <RouterProvider router={appRouter} />;
 };
 
 export default App;

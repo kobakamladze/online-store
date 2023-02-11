@@ -1,20 +1,19 @@
-import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 
 import { logOut } from "../../http/userAPI";
-import { onLogOutAction } from "../../store/authReducer";
+import { useContext } from "react";
+import { AuthorizedContext } from "../app/App";
 
-const AuthorizedNavigation = () => {
-  const dispatch = useDispatch();
+const AuthorizedNavigation = ({ user: [authorized, setAuthorized] }) => {
+  console.log(authorized, setAuthorized);
   const navigate = useNavigate();
-
-  const { authorized } = useSelector(state => state);
 
   const handleLogOut = e => {
     e.preventDefault();
-    dispatch(onLogOutAction());
-    return logOut();
+    return logOut()
+      .then(() => setAuthorized(() => ({ id: null, email: null, role: null })))
+      .finally(() => navigate("/"));
   };
 
   return (
@@ -69,11 +68,11 @@ const UnauthorizedNavigation = () => {
 };
 
 const NavBar = () => {
-  const { authorized } = useSelector(state => state);
+  const [authorized, setAuthorized] = useContext(AuthorizedContext);
 
   const routes =
-    authorized.id && authorized.email ? (
-      <AuthorizedNavigation />
+    authorized?.id && authorized?.email ? (
+      <AuthorizedNavigation user={[authorized, setAuthorized]} />
     ) : (
       <UnauthorizedNavigation />
     );

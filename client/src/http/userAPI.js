@@ -14,7 +14,6 @@ export const logIn = ({ email, password }) =>
     .post("/api/user/login", { email, password })
     .then(({ data: { accessToken } }) => {
       localStorage.setItem("token", accessToken);
-      localStorage.setItem("isLogged", true);
       return jwt_decode(accessToken);
     });
 
