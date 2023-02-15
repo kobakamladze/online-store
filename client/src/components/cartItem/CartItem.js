@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { animated, useSpring } from "react-spring";
 
-import { deleteCartItem } from "../http/cartAPI";
+import { deleteCartItem } from "../../http/cartAPI";
 
 const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
   const navigate = useNavigate();

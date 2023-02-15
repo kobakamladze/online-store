@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Await, useLoaderData } from "react-router-dom";
 
-import CartItem from "../components/CartItem";
+import CartItem from "../components/cartItem/CartItem";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 const CartList = ({ data }) => {
