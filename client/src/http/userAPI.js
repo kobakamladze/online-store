@@ -7,7 +7,8 @@ export const registration = ({ email, password }) =>
     .then(({ data: { accessToken } }) => {
       localStorage.setItem("token", accessToken);
       return jwt_decode(accessToken);
-    });
+    })
+    .catch(e => console.log(e));
 
 export const logIn = ({ email, password }) =>
   authHost
@@ -29,4 +30,8 @@ export const check = () =>
       localStorage.setItem("token", data.accessToken);
       return jwt_decode(data.accessToken);
     })
-    .catch(e => console.log(e));
+    .catch(e => {
+      console.log(e);
+      throw new Error();
+    })
+    .finally();

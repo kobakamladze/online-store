@@ -5,8 +5,6 @@ class CartController {
     const deviceId = parseInt(req.params.deviceId);
     const userId = parseInt(req.body.userId);
 
-    console.log(deviceId, userId);
-
     return Cart.findOne({
       where: { userId },
       include: [{ model: CartDevice, include: [{ model: Device }] }],

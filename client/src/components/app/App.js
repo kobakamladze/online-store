@@ -5,7 +5,6 @@ import {
   createRoutesFromElements,
   defer,
 } from "react-router-dom";
-import { createContext, useState } from "react";
 
 import "./App.css";
 import Auth from "../../pages/Auth";
@@ -15,33 +14,20 @@ import Layout from "../../pages/Layout";
 import Error from "../../pages/Error";
 import AdminPanel from "../../pages/AdminPanel";
 
-import { check } from "../../http/userAPI";
 import fetchBrands from "../../http/brandAPI";
 import fetchTypes from "../../http/typeAPI";
 import { fetchDevices, fetchDevice } from "../../http/deviceAPI";
 import CartPage from "../../pages/CartPage";
 import { fetchCartItems } from "../../http/cartAPI";
 import AuthRoute from "../../routes/AurthRoute";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authCheckMiddleware } from "../../store/slices/authSlice";
+import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
-    <Route
-      path="/"
-      element={<Layout />}
-      loader={async () => {
-        try {
-          const authCheck = await check();
-          const id = authCheck?.id;
-          const email = authCheck?.email;
-
-          console.log(authCheck);
-
-          return id && email ? authCheck : null;
-        } catch (e) {
-          console.log(e);
-        }
-      }}
-    >
+    <Route path="/" element={<Layout />}>
       <Route
         path=""
         element={<Catalog />}
@@ -60,11 +46,12 @@ const appRouter = createBrowserRouter(
       <Route path="login" element={<Auth />} />
       <Route path="registration" element={<Auth />} />
 
-      <Route element={<AuthRoute />} loader={() => check()}>
+      <Route element={<AuthRoute />}>
         <Route
           path="cart/:userId"
           element={<CartPage />}
           loader={({ params }) => fetchCartItems(params.userId)}
+          errorElement={<div>Error</div>}
         />
         <Route
           path="admin-panel"
@@ -83,20 +70,18 @@ const appRouter = createBrowserRouter(
   )
 );
 
-export const AuthorizedContext = createContext();
-
 const App = () => {
-  const [authorized, setAuthorized] = useState({
-    id: null,
-    email: null,
-    role: null,
-  });
+  const dispatch = useDispatch();
+  const { loading } = useSelector(state => state.authorization);
 
-  return (
-    <AuthorizedContext.Provider value={[authorized, setAuthorized]}>
-      <RouterProvider router={appRouter} />
-    </AuthorizedContext.Provider>
-  );
+  useEffect(() => {
+    dispatch(authCheckMiddleware());
+    // eslint-disable-next-line
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
+
+  return <RouterProvider router={appRouter} />;
 };
 
 export default App;

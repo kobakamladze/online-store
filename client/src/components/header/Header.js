@@ -1,20 +1,12 @@
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 
-import { logOut } from "../../http/userAPI";
-import { useContext } from "react";
-import { AuthorizedContext } from "../app/App";
+import { logoutMiddleware } from "../../store/slices/authSlice";
 
-const AuthorizedNavigation = ({ user: [authorized, setAuthorized] }) => {
-  console.log(authorized, setAuthorized);
+const AuthorizedNavigation = ({ handleLogOut }) => {
   const navigate = useNavigate();
-
-  const handleLogOut = e => {
-    e.preventDefault();
-    return logOut()
-      .then(() => setAuthorized(() => ({ id: null, email: null, role: null })))
-      .finally(() => navigate("/"));
-  };
+  const { user } = useSelector(state => state.authorization);
 
   return (
     <>
@@ -22,11 +14,11 @@ const AuthorizedNavigation = ({ user: [authorized, setAuthorized] }) => {
         variant="secondary"
         className="m-2"
         key={crypto.randomUUID()}
-        onClick={() => navigate(`/cart/${authorized.id}`)}
+        onClick={() => navigate(`/cart/${user.id}`)}
       >
         Cart
       </Button>
-      ,
+
       <Button
         variant="secondary"
         key={crypto.randomUUID()}
@@ -35,7 +27,6 @@ const AuthorizedNavigation = ({ user: [authorized, setAuthorized] }) => {
       >
         Log Out
       </Button>
-      ,
     </>
   );
 };
@@ -53,7 +44,7 @@ const UnauthorizedNavigation = () => {
       >
         Log In
       </Button>
-      ,
+
       <Button
         variant="secondary"
         className="m-2"
@@ -62,17 +53,22 @@ const UnauthorizedNavigation = () => {
       >
         Register
       </Button>
-      ,
     </>
   );
 };
 
 const NavBar = () => {
-  const [authorized, setAuthorized] = useContext(AuthorizedContext);
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.authorization);
+
+  const handleLogOut = e => {
+    e.preventDefault();
+    return dispatch(logoutMiddleware());
+  };
 
   const routes =
-    authorized?.id && authorized?.email ? (
-      <AuthorizedNavigation user={[authorized, setAuthorized]} />
+    user?.id && user?.email ? (
+      <AuthorizedNavigation handleLogOut={handleLogOut} />
     ) : (
       <UnauthorizedNavigation />
     );

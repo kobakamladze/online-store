@@ -64,6 +64,7 @@ class DeviceContorller {
 
   getOne(req, res) {
     const id = req.params.deviceId;
+
     return Device.findOne({
       where: { id },
       include: [

@@ -1,16 +1,17 @@
-import { Navigate, Outlet, useLoaderData } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
 
 const AuthRoute = () => {
-  let authed = false;
+  const { user } = useSelector(state => state.authorization);
 
-  const authData = useLoaderData();
+  const id = user?.id;
+  const email = user?.email;
 
-  const id = authData?.id;
-  const email = authData?.email;
-  if (id && email) authed = true;
-  else authed = false;
-
-  return authed ? <Outlet /> : <Navigate to="/login" />;
+  return id && email ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login?redirectedFromAuthMiddleware=true" />
+  );
 };
 
 export default AuthRoute;

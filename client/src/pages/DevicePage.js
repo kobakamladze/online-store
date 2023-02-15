@@ -1,10 +1,10 @@
-import { Suspense, useContext } from "react";
+import { Suspense } from "react";
 import { Col, Container, Image, Button } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { Await, useLoaderData, useNavigate } from "react-router-dom";
 import { animated, useSpring } from "react-spring";
 
 import notfound from "../assets/notfound.jfif";
-import { AuthorizedContext } from "../components/app/App";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 import { addItemToCart } from "../http/cartAPI";
 
@@ -45,13 +45,14 @@ const GenerateDeviceInfoList = ({ props: info }) => {
 };
 
 const DevicePage = () => {
-  const navigate = useNavigate();
   const { data } = useLoaderData();
-  const [authorized] = useContext(AuthorizedContext);
+  const navigate = useNavigate();
+  const { user } = useSelector(state => state.authorization);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const handleAddToCart = (e, { userId, deviceId }) => {
     e.preventDefault();
+    if (!userId && !deviceId) navigate(`/login`);
     return addItemToCart({ userId, deviceId })
       .catch(e => console.log(e))
       .finally(() => navigate(`/cart/${userId}`));
@@ -98,7 +99,7 @@ const DevicePage = () => {
                 </div>
                 <Button
                   onClick={e =>
-                    handleAddToCart(e, { userId: authorized.id, deviceId: id })
+                    handleAddToCart(e, { userId: user.id, deviceId: id })
                   }
                 >
                   Add to cart

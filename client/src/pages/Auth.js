@@ -1,51 +1,41 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Form, Card } from "react-bootstrap";
 import { Container, Button } from "react-bootstrap/esm";
 
-import { logIn, registration } from "../http/userAPI";
-import { AuthorizedContext } from "../components/app/App";
+import { registration } from "../http/userAPI";
+import { useDispatch } from "react-redux";
+import { loginMiddleware } from "../store/slices/authSlice";
 
 const Auth = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const setAuthorized = useContext(AuthorizedContext)[1];
 
-  const { pathname } = useLocation();
-  const isLogin = pathname === "/login";
+  const isLogin = location.pathname === "/login";
 
   const handleSubmitAction = (e, { email, password }) => {
     e.preventDefault();
 
-    if (isLogin) {
-      return logIn({ email, password })
-        .then(response => {
-          const id = response?.id;
-          const email = response?.email;
-          const role = response?.role;
+    switch (location.pathname) {
+      case "/login":
+        const navigateTo = location.search ? -2 : "/";
 
-          if (id && email && role) {
-            return setAuthorized(() => ({
-              id,
-              email,
-              role,
-            }));
-          }
-        })
-        .catch(e => {
-          console.log(e);
-          return navigate(0);
-        })
-        .finally(() => navigate("/"));
+        dispatch(loginMiddleware({ email, password }));
+        return navigate(navigateTo);
+      case "/registration":
+        return registration({ email, password })
+          .then(response => response)
+          .catch(e => {
+            console.log(e);
+            return navigate(0);
+          });
+      default:
+        return navigate(0);
     }
-
-    return registration({ email, password })
-      .then(response => {
-        return response;
-      })
-      .catch(e => alert(e.response.data.message));
   };
 
   return (
