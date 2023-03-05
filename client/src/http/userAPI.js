@@ -1,5 +1,6 @@
-import { host, authHost } from ".";
 import jwt_decode from "jwt-decode";
+
+import { host, authHost } from ".";
 
 export const registration = ({ email, password }) =>
   host
@@ -11,12 +12,12 @@ export const registration = ({ email, password }) =>
     .catch(e => console.log(e));
 
 export const logIn = ({ email, password }) =>
-  authHost
-    .post("/api/user/login", { email, password })
-    .then(({ data: { accessToken } }) => {
-      localStorage.setItem("token", accessToken);
-      return jwt_decode(accessToken);
-    });
+  authHost.post("/api/user/login", { email, password }).then(({ data }) => {
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+
+    return jwt_decode(data.accessToken);
+  });
 
 export const logOut = () => {
   localStorage.clear();
@@ -27,7 +28,9 @@ export const check = () =>
   authHost
     .get("/api/user/auth")
     .then(({ data }) => {
-      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
       return jwt_decode(data.accessToken);
     })
     .catch(e => {
