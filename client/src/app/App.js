@@ -7,23 +7,23 @@ import {
 } from "react-router-dom";
 
 import "./App.css";
-import Auth from "../../pages/Auth";
-import Catalog from "../../pages/Catalog";
-import DevicePage from "../../pages/DevicePage";
-import Layout from "../../pages/Layout";
-import Error from "../../pages/Error";
-import AdminPanel from "../../pages/AdminPanel";
+import Auth from "../pages/Auth";
+import Catalog from "../pages/Catalog";
+import DevicePage from "../pages/DevicePage";
+import Layout from "../pages/Layout";
+import Error from "../pages/Error";
+import AdminPanel from "../pages/AdminPanel";
 
-import fetchBrands from "../../http/brandAPI";
-import fetchTypes from "../../http/typeAPI";
-import { fetchDevices, fetchDevice } from "../../http/deviceAPI";
-import CartPage from "../../pages/CartPage";
-import { fetchCartItems } from "../../http/cartAPI";
-import AuthRoute from "../../routes/AurthRoute";
+import fetchBrands from "../http/brandAPI";
+import fetchTypes from "../http/typeAPI";
+import { fetchDevices, fetchDevice } from "../http/deviceAPI";
+import CartPage from "../pages/CartPage";
+import { fetchCartItems } from "../http/cartAPI";
+import AuthRoute from "../routes/AuthRoute";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authCheckMiddleware } from "../../store/slices/authSlice";
-import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
+import { authCheckMiddleware } from "../store/slices/authSlice";
+import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -31,11 +31,11 @@ const appRouter = createBrowserRouter(
       <Route
         path=""
         element={<Catalog />}
-        loader={async () => ({
-          types: await fetchTypes(),
-          brands: await fetchBrands(),
-          devices: await fetchDevices(),
-        })}
+        // loader={async () => ({
+        //   types: await fetchTypes(),
+        //   brands: await fetchBrands(),
+        //   devices: await fetchDevices(),
+        // })}
       />
       <Route
         path="device/:deviceId"

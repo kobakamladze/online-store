@@ -29,6 +29,8 @@ class DeviceContorller {
     const brandIdsList = brandId ? brandId.split(",") : null;
     const typeIdsList = typeId ? typeId.split(",") : null;
 
+    console.log("Types === ", typeId, "Page === ", page);
+
     let offset = page * limit - limit;
     let queryParams = {
       offset,

@@ -8,94 +8,90 @@ import BrandBar from "../components/brandBar/BrandBar";
 import DeviceCatalog from "../components/deviceCatalog/DeviceCatalog";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 import { fetchDevices } from "../http/deviceAPI";
-
-// generates array of integers that are ids of passed list (e.g. brands, types...)
-function generateFilterList(list = []) {
-  if (!list.length) return [];
-  return list.filter(({ active }) => active).map(({ id }) => id);
-}
+import {
+  useGetBrandsQuery,
+  useGetDevicesQuery,
+  useGetTypesQuery,
+} from "../store/slices/apiSlice";
 
 const Catalog = () => {
-  const data = useLoaderData();
-  const { brands, types, devices } = data;
-
-  const [devicesData, setDevicesData] = useState(devices);
+  const [activeTypes, setActiveTypes] = useState([]);
+  const [activeBrands, setActiveBrands] = useState([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
 
-  // states for filtering devices by chosen types and brands
-  const [brandsButtonsList, setBrandsButtonsList] = useState(
-    brands.map(({ name, id }) => ({ name, id, active: false }))
-  );
-  const [typesButtonsList, setTypesButtonsList] = useState(
-    types.map(({ id, name }) => ({ id, name, active: false }))
-  );
+  const {
+    data: devices,
+    error: devicesError,
+    isLoading: devicesIsLoading,
+  } = useGetDevicesQuery({ brandId: activeBrands, typeId: activeTypes, page });
+
+  const {
+    data: brands,
+    error: brandsError,
+    isLoading: brandsIsLoading,
+  } = useGetBrandsQuery();
+
+  const {
+    data: types,
+    error: typesError,
+    isLoading: typesIsLoading,
+  } = useGetTypesQuery();
 
   const brandsButtonToggle = e => {
     setPage(1);
-    setBrandsButtonsList(state => [
-      ...state.map(button =>
-        button.name === e.target.textContent
-          ? { ...button, active: !button.active }
-          : button
-      ),
-    ]);
+
+    const id = e.target.getAttribute("data-id");
+    const idIsActive = activeBrands.includes(id);
+
+    if (idIsActive)
+      return setActiveBrands(state => [
+        ...state.filter(activeId => activeId !== id),
+      ]);
+
+    setActiveBrands(state => [...state, id]);
   };
 
   const typesButtonToggle = e => {
     setPage(1);
-    setTypesButtonsList(state => [
-      ...state.map(button =>
-        button.name === e.target.textContent
-          ? { ...button, active: !button.active }
-          : { ...button, active: false }
-      ),
-    ]);
+
+    const id = e.target.getAttribute("data-id");
+    const idIsActive = activeTypes.includes(id);
+
+    if (idIsActive)
+      return setActiveTypes(state => [
+        ...state.filter(activeId => activeId !== id),
+      ]);
+
+    setActiveTypes(state => [...state, id]);
   };
 
-  // useEffect is being called on selecting brand, type or new next page
-  useEffect(
-    () => {
-      setLoading(true);
-      async function fetchFilteredDevices() {
-        const brandIds = generateFilterList(brandsButtonsList);
-        const typeId = typesButtonsList.find(type => type.active)?.id || "";
-
-        const newDevicesData = await fetchDevices(brandIds, typeId, page);
-        setDevicesData(state => ({ ...state, ...newDevicesData }));
-        setLoading(false);
-      }
-      fetchFilteredDevices();
-    },
-    // eslint-disable-next-line
-    [JSON.stringify(typesButtonsList), JSON.stringify(brandsButtonsList), page]
-  );
+  if (typesIsLoading || brandsIsLoading || devicesIsLoading)
+    return <LoadingSpinner />;
 
   return (
     <Container>
       <Row>
         <Col md={3}>
           <TypeBar
-            typesButtonsList={typesButtonsList}
+            typesButtonsList={types.map(type =>
+              activeTypes.includes(`${type.id}`)
+                ? { ...type, active: true }
+                : { ...type, active: false }
+            )}
             typesButtonToggle={typesButtonToggle}
           />
         </Col>
 
         <Col md={9}>
           <BrandBar
-            brandsButtonsList={brandsButtonsList}
+            brandsButtonsList={brands.map(brand =>
+              activeBrands.includes(`${brand.id}`)
+                ? { ...brand, active: true }
+                : { ...brand, active: false }
+            )}
             brandsButtonToggle={brandsButtonToggle}
           />
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <DeviceCatalog
-              devices={devicesData}
-              loading={loading}
-              page={page}
-              setPage={setPage}
-            />
-          )}
+          <DeviceCatalog devices={devices} page={page} setPage={setPage} />
         </Col>
       </Row>
     </Container>

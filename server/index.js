@@ -2,7 +2,6 @@ import { config } from "dotenv";
 import express from "express";
 import cors from "cors";
 import sequelize from "./db.js";
-import cookieParser from "cookie-parser";
 
 import router from "./routes/index.js";
 import errorHandler from "./middleware/ErrorHandlingMiidleware.js";
@@ -12,7 +11,6 @@ config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
 
 app.use("/api", router);
 app.use(errorHandler);
@@ -23,7 +21,7 @@ const start = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
-    app.listen(PORT, (err) =>
+    app.listen(PORT, err =>
       err ? console.log(err) : console.log(`Listening on PORT: ${PORT}...`)
     );
   } catch (err) {

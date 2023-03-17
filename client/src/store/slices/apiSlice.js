@@ -38,27 +38,45 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/" }),
   endpoints: builder => ({
+    // Authentication hooks
     auth: builder.query({
       query: () => "auth",
     }),
     login: builder.mutation({
       query: ({ email, password }) => ({
-        url: "login",
+        url: "user/login",
         method: "POST",
         body: { email, password },
       }),
     }),
     registration: builder.mutation({
       query: ({ email, password }) => ({
-        url: "registration",
+        url: "user/registration",
         method: "POST",
         body: { email, password },
       }),
     }),
     logout: builder.query({
-      query: () => "logout",
+      query: () => "user/logout",
+    }),
+
+    // Data fetching hooks
+    getTypes: builder.query({
+      query: () => "type",
+    }),
+    getBrands: builder.query({
+      query: () => "brand",
+    }),
+    getDevices: builder.query({
+      query: ({ brandId = [], typeId = [], page = 1 }) => ({
+        url: "device",
+        params: { brandId, typeId, page },
+      }),
+    }),
+    getSpecificDevice: builder.query({
+      query: id => `device/${id}`,
     }),
   }),
 });
@@ -68,4 +86,8 @@ export const {
   useLogoutQuery,
   useLoginMutation,
   useRegistrationMutation,
+  useGetBrandsQuery,
+  useGetTypesQuery,
+  useGetDevicesQuery,
+  useGetSpecificDeviceQuery,
 } = apiSlice;

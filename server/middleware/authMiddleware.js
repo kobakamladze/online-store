@@ -12,6 +12,7 @@ export default function (req, res, next) {
     req.user = decoded;
     next();
   } catch (e) {
+    console.log(e);
     next(ApiError.badRequest("Not authorized"));
   }
 }

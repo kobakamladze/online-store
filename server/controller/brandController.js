@@ -26,7 +26,7 @@ class BrandContorller {
   }
 
   getAll(req, res, next) {
-    return Brand.findAll()
+    return Brand.findAll({ attributes: ["id", "name"] })
       .then(response => res.json(response))
       .catch(e => next(e))
       .finally();
