@@ -28,8 +28,6 @@ class TokenService {
   static verifyRefreshToken(refreshToken) {
     return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
   }
-
-  // static referesh(refreshToken) {}
 }
 
 export default TokenService;

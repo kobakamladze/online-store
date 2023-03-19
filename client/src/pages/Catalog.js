@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useState } from "react";
 import { Container, Col } from "react-bootstrap/esm";
 import Row from "react-bootstrap/Row";
 
@@ -7,7 +6,6 @@ import TypeBar from "../components/typeBar/TypeBar";
 import BrandBar from "../components/brandBar/BrandBar";
 import DeviceCatalog from "../components/deviceCatalog/DeviceCatalog";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
-import { fetchDevices } from "../http/deviceAPI";
 import {
   useGetBrandsQuery,
   useGetDevicesQuery,

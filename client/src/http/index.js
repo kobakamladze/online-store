@@ -6,8 +6,9 @@ const host = axios.create({ baseURL });
 const authHost = axios.create({ baseURL });
 
 const authInterceptor = config => {
-  const token = localStorage.getItem("token");
-  config.headers.authorization = `Bearer ${token}`;
+  const accessToken = localStorage.getItem("accessToken");
+
+  config.headers.authorization = `Bearer ${accessToken}`;
   return config;
 };
 

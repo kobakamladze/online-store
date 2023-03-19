@@ -2,7 +2,6 @@ import { Router } from "express";
 import { body } from "express-validator";
 
 import userController from "../controller/userController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
 
 const userRouter = new Router();
 
@@ -48,6 +47,13 @@ userRouter.get("/logout", userController.logOut);
 
     Authorization endpoint
 */
-userRouter.get("/auth", authMiddleware, userController.check);
+userRouter.get("/auth", userController.check);
+
+/* 
+    GET /api/user/refresh
+
+    Authorization endpoint
+*/
+userRouter.get("/refresh", userController.refresh);
 
 export default userRouter;

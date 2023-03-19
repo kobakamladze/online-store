@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import ApiError from "../error/ApiError.js";
+import { User } from "../models/model.js";
 
 import AuthService from "../services/AuthService.js";
 import TokenService from "../services/TokenService.js";
@@ -42,11 +43,43 @@ class UserController {
     res.json("Logged out");
   }
 
-  // Check auth function
+  // Check authentication function
   check(req, res, next) {
-    const { id, email, role } = req.user;
-    if (!id) next(ApiError.badRequest());
-    res.json(TokenService.generateToken({ id, email, role }));
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      if (!token) throw ApiError.badRequest("Not aurthorized");
+
+      const decoded = TokenService.verifyAccessToken(token);
+      if (!decoded) throw ApiError.badRequest("Not aurthorized");
+
+      res.status(200).json({ authorized: true });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  // Refresh token function
+  refresh(req, res, next) {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) throw ApiError.badRequest("Not aurthorized");
+
+    const decoded = TokenService.verifyRefreshToken(token);
+    if (!decoded) throw ApiError.badRequest("Not aurthorized");
+
+    return User.findByPk(decoded.id, {
+      attributes: { exclude: ["password"] },
+    })
+      .then(user => {
+        if (!user) throw ApiError.badRequest();
+
+        const { id, email, role } = user;
+        const newTokens = TokenService.generateToken({ id, email, role });
+
+        res.status(200).json(newTokens);
+      })
+      .catch(e => next(e));
+
+    // res.status(200).json(decoded);
   }
 }
 

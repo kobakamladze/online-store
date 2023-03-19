@@ -20,18 +20,22 @@ export const logIn = ({ email, password }) =>
   });
 
 export const logOut = () => {
-  localStorage.clear();
-  return authHost.get("/api/user/logout").catch(e => console.log(e));
+  return authHost
+    .get("/api/user/logout")
+    .then(res => {
+      localStorage.clear();
+      return res;
+    })
+    .catch(e => console.log(e));
 };
 
 export const check = () =>
   authHost
     .get("/api/user/auth")
     .then(({ data }) => {
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-
-      return jwt_decode(data.accessToken);
+      if (data.authorized) {
+        return jwt_decode(localStorage.getItem("accessToken"));
+      }
     })
     .catch(e => {
       console.log(e);

@@ -6,10 +6,19 @@ import TypeAddForm from "../components/admin/TypeAddForm";
 import BrandAddForm from "../components/admin/BrandAddFrom";
 import DeviceAddForm from "../components/admin/DeviceAddForm";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
+import { useGetBrandsQuery, useGetTypesQuery } from "../store/slices/apiSlice";
 
 const AdminPanel = () => {
   const data = useLoaderData();
-  const { brands, types } = data;
+
+  const {
+    data: brands,
+    error,
+    isLoading: brandsIsLoading,
+  } = useGetBrandsQuery();
+  const { data: types, isLoading: typesIsloading } = useGetTypesQuery();
+
+  if (brandsIsLoading || typesIsloading) return <LoadingSpinner />;
 
   return (
     <Suspense fallback={<LoadingSpinner />}>

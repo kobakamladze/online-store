@@ -28,15 +28,7 @@ import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      <Route
-        path=""
-        element={<Catalog />}
-        // loader={async () => ({
-        //   types: await fetchTypes(),
-        //   brands: await fetchBrands(),
-        //   devices: await fetchDevices(),
-        // })}
-      />
+      <Route path="" element={<Catalog />} />
       <Route
         path="device/:deviceId"
         element={<DevicePage />}
@@ -53,16 +45,7 @@ const appRouter = createBrowserRouter(
           loader={({ params }) => fetchCartItems(params.userId)}
           errorElement={<div>Error</div>}
         />
-        <Route
-          path="admin-panel"
-          element={<AdminPanel />}
-          loader={async () =>
-            defer({
-              brands: await fetchBrands(),
-              types: await fetchTypes(),
-            })
-          }
-        />
+        <Route path="admin-panel" element={<AdminPanel />} />
       </Route>
 
       <Route path="*" element={<Error />} />
