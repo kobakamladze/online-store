@@ -14,7 +14,7 @@ class TokenService {
         payload, // eslint-disable-next-line
         process.env.ACCESS_TOKEN_SECRET,
         {
-          expiresIn: "30s",
+          expiresIn: "24h",
         }
       ),
       refreshToken: jwt.sign(
