@@ -13,7 +13,7 @@ const AdminPanel = () => {
 
   const {
     data: brands,
-    error,
+    // error,
     isLoading: brandsIsLoading,
   } = useGetBrandsQuery();
   const { data: types, isLoading: typesIsloading } = useGetTypesQuery();

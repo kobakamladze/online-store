@@ -19,19 +19,19 @@ const Catalog = () => {
 
   const {
     data: devices,
-    error: devicesError,
+    // error: devicesError,
     isLoading: devicesIsLoading,
   } = useGetDevicesQuery({ brandId: activeBrands, typeId: activeTypes, page });
 
   const {
     data: brands,
-    error: brandsError,
+    // error: brandsError,
     isLoading: brandsIsLoading,
   } = useGetBrandsQuery();
 
   const {
     data: types,
-    error: typesError,
+    // error: typesError,
     isLoading: typesIsLoading,
   } = useGetTypesQuery();
 

@@ -14,16 +14,13 @@ import Layout from "../pages/Layout";
 import Error from "../pages/Error";
 import AdminPanel from "../pages/AdminPanel";
 
-import fetchBrands from "../http/brandAPI";
-import fetchTypes from "../http/typeAPI";
-import { fetchDevices, fetchDevice } from "../http/deviceAPI";
+import { fetchDevice } from "../http/deviceAPI";
 import CartPage from "../pages/CartPage";
 import { fetchCartItems } from "../http/cartAPI";
 import AuthRoute from "../routes/AuthRoute";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { authCheckMiddleware } from "../store/slices/authSlice";
+// import { authCheckMiddleware } from "../store/slices/authSlice";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
+import { useAuthCheckQuery } from "../store/slices/authApiSlice";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -54,15 +51,8 @@ const appRouter = createBrowserRouter(
 );
 
 const App = () => {
-  const dispatch = useDispatch();
-  const { loading } = useSelector(state => state.authorization);
-
-  useEffect(() => {
-    dispatch(authCheckMiddleware());
-    // eslint-disable-next-line
-  }, []);
-
-  if (loading) return <LoadingSpinner />;
+  const { isLoading } = useAuthCheckQuery();
+  if (isLoading) return <LoadingSpinner />;
 
   return <RouterProvider router={appRouter} />;
 };

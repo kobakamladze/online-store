@@ -2,11 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 
-import { logoutMiddleware } from "../../store/slices/authSlice";
+import { setCredentials } from "../../store/slices/authSlice";
 
 const AuthorizedNavigation = ({ handleLogOut }) => {
   const navigate = useNavigate();
-  const { user } = useSelector(state => state.authorization);
+  const user = useSelector(state => state.user);
 
   return (
     <>
@@ -59,11 +59,14 @@ const UnauthorizedNavigation = () => {
 
 const NavBar = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.authorization);
+  const user = useSelector(state => state.user);
 
-  const handleLogOut = e => {
+  // const [logout, { isLoading }] = useLoginMutation();
+
+  const handleLogOut = async e => {
     e.preventDefault();
-    return dispatch(logoutMiddleware());
+    dispatch(setCredentials({ id: null, email: null, role: null }));
+    localStorage.clear();
   };
 
   const routes =

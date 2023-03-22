@@ -1,38 +1,54 @@
 import { useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import jwt_decode from "jwt-decode";
 import { Form, Card } from "react-bootstrap";
 import { Container, Button } from "react-bootstrap/esm";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
-import { registration } from "../http/userAPI";
-import { useDispatch } from "react-redux";
-import { loginMiddleware } from "../store/slices/authSlice";
+import {
+  useLoginMutation,
+  useRegistrationMutation,
+} from "../store/slices/apiSlice";
+import { setCredentials } from "../store/slices/authSlice";
 
 const Auth = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [login] = useLoginMutation();
+  const [register] = useRegistrationMutation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const isLogin = location.pathname === "/login";
 
-  const handleSubmitAction = (e, { email, password }) => {
+  const handleSubmitAction = async (e, { email, password }) => {
     e.preventDefault();
 
     switch (location.pathname) {
       case "/login":
-        const navigateTo = location.search ? -2 : "/";
+        try {
+          const navigateTo = location.search ? -2 : "/";
 
-        dispatch(loginMiddleware({ email, password }));
-        return navigate(navigateTo);
+          // dispatch(loginMiddleware({ email, password }));
+          const data = await login({ email, password }).unwrap();
+
+          localStorage.setItem("accessToken", data.accessToken);
+          localStorage.setItem("refreshToken", data.refreshToken);
+          dispatch(
+            setCredentials(jwt_decode(localStorage.getItem("accessToken")))
+          );
+
+          return navigate(navigateTo);
+        } catch (e) {
+          return e;
+        }
       case "/registration":
-        return registration({ email, password })
+        return register({ email, password })
           .then(response => response)
-          .catch(e => {
-            console.log(e);
-            return navigate(0);
-          });
+          .catch(e => navigate(0));
       default:
         return navigate(0);
     }

@@ -46,40 +46,51 @@ class UserController {
   // Check authentication function
   check(req, res, next) {
     try {
-      const token = req.headers.authorization.split(" ")[1];
-      if (!token) throw ApiError.badRequest("Not aurthorized");
+      const authorizationHeader = req.headers?.authorization;
+      if (!authorizationHeader) throw ApiError.unauthorized("Not aurthorized");
+
+      const token = authorizationHeader.split(" ")[1];
+      if (!token || token === "undefined" || token === "null")
+        throw ApiError.unauthorized("Not aurthorized");
 
       const decoded = TokenService.verifyAccessToken(token);
-      if (!decoded) throw ApiError.badRequest("Not aurthorized");
+      if (!decoded) throw ApiError.forbidden("Not aurthorized");
 
       res.status(200).json({ authorized: true });
     } catch (e) {
+      console.log(e);
       next(e);
     }
   }
 
   // Refresh token function
-  refresh(req, res, next) {
-    const token = req.headers.authorization.split(" ")[1];
-    if (!token) throw ApiError.badRequest("Not aurthorized");
+  async refresh(req, res, next) {
+    try {
+      const authorizationHeader = req.headers?.authorization;
+      if (!authorizationHeader)
+        throw ApiError.forbidden("Invalid refresh token");
 
-    const decoded = TokenService.verifyRefreshToken(token);
-    if (!decoded) throw ApiError.badRequest("Not aurthorized");
+      const token = authorizationHeader.split(" ")[1];
+      if (!token || token === "undefined" || token === "null")
+        throw ApiError.forbidden("Not aurthorized");
 
-    return User.findByPk(decoded.id, {
-      attributes: { exclude: ["password"] },
-    })
-      .then(user => {
-        if (!user) throw ApiError.badRequest();
+      const decoded = TokenService.verifyRefreshToken(token);
+      if (!decoded) throw ApiError.forbidden("Not aurthorized");
 
-        const { id, email, role } = user;
-        const newTokens = TokenService.generateToken({ id, email, role });
+      const user = await User.findByPk(decoded.id, {
+        attributes: { exclude: ["password"] },
+      });
 
-        res.status(200).json(newTokens);
-      })
-      .catch(e => next(e));
+      if (!user) throw ApiError.badRequest("User does not exist");
 
-    // res.status(200).json(decoded);
+      const { id, email, role } = user;
+      const newTokens = TokenService.generateToken({ id, email, role });
+
+      res.status(200).json(newTokens);
+    } catch (e) {
+      console.log(e);
+      next(e);
+    }
   }
 }
 

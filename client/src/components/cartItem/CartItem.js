@@ -7,7 +7,7 @@ import { deleteCartItem } from "../../http/cartAPI";
 
 const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
   const navigate = useNavigate();
-  const { user } = useSelector(state => state.authorization);
+  const user = useSelector(state => state.user);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const removeDeviceFromCart = (e, { userId, deviceId }) => {

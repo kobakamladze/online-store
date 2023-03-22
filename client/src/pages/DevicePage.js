@@ -47,7 +47,7 @@ const GenerateDeviceInfoList = ({ props: info }) => {
 const DevicePage = () => {
   const { data } = useLoaderData();
   const navigate = useNavigate();
-  const { user } = useSelector(state => state.authorization);
+  const user = useSelector(state => state.user);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
   const handleAddToCart = (e, { userId, deviceId }) => {
