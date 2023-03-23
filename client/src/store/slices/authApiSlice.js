@@ -6,13 +6,10 @@ import { logOut, setCredentials } from "./authSlice";
 const authQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/",
   credentials: "same-origin",
-  prepareHeaders: (headers, { getState }) => {
-    const { id, email, role } = getState().user;
-
-    const token =
-      id && email && role
-        ? localStorage.getItem("accessToken")
-        : localStorage.getItem("refreshToken");
+  prepareHeaders: (headers, { extra }) => {
+    const token = extra?.isRefreshingToken
+      ? localStorage.getItem("refreshToken")
+      : localStorage.getItem("accessToken");
     if (token) headers.set("authorization", `Bearer ${token}`);
 
     return headers;
@@ -22,11 +19,23 @@ const authQuery = fetchBaseQuery({
 const authQueryWithRetry = async (args, api, extraOptions) => {
   let result = await authQuery(args, api, extraOptions);
 
+  if (result?.data?.authorized) {
+    api.dispatch(
+      setCredentials(jwt_decode(localStorage.getItem("accessToken")))
+    );
+
+    return result;
+  }
+
   if (result?.error?.status === 401) {
     console.log("Sending refreshToken");
 
-    // retrying for new access token
-    let refreshResult = await authQuery("user/refresh", api, extraOptions);
+    // request for new access token
+    let refreshResult = await authQuery(
+      "user/refresh",
+      { ...api, extra: { isRefreshingToken: true } },
+      extraOptions
+    );
 
     if (refreshResult?.data) {
       localStorage.setItem("accessToken", refreshResult.data.accessToken);
@@ -55,10 +64,32 @@ export const authApiSlice = createApi({
   endpoints: builder => ({}),
 });
 
-export const { useAuthCheckQuery } = authApiSlice.injectEndpoints({
+export const {
+  useAuthCheckQuery,
+  useAddToCartMutation,
+  useDeleteCartItemMutation,
+  useFetchCartItemsQuery,
+} = authApiSlice.injectEndpoints({
   endpoints: builder => ({
     authCheck: builder.query({
       query: () => "user/auth",
+    }),
+    fetchCartItems: builder.query({
+      query: userId => `cart/${userId}`,
+    }),
+    addToCart: builder.mutation({
+      query: ({ deviceId, userId }) => ({
+        args: `cart/add/${deviceId}`,
+        method: "POST",
+        body: { userId },
+      }),
+    }),
+    deleteCartItem: builder.mutation({
+      query: ({ deviceId, userId }) => ({
+        args: `cart/delete/${deviceId}`,
+        method: "DELETE",
+        body: { userId },
+      }),
     }),
   }),
 });

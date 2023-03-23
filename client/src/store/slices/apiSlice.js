@@ -36,7 +36,7 @@ export const apiSlice = createApi({
         params: { brandId, typeId, page },
       }),
     }),
-    getSpecificDevice: builder.query({
+    getSingleDevice: builder.query({
       query: id => `device/${id}`,
     }),
   }),
@@ -48,5 +48,5 @@ export const {
   useGetBrandsQuery,
   useGetTypesQuery,
   useGetDevicesQuery,
-  useGetSpecificDeviceQuery,
+  useGetSingleDeviceQuery,
 } = apiSlice;

@@ -3,9 +3,11 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { animated, useSpring } from "react-spring";
 
-import { deleteCartItem } from "../../http/cartAPI";
+import { useDeleteCartItemMutation } from "../../store/slices/authApiSlice";
 
 const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
+  const [deleteCartItem] = useDeleteCartItemMutation();
+
   const navigate = useNavigate();
   const user = useSelector(state => state.user);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });

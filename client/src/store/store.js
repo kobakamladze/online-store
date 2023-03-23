@@ -8,7 +8,6 @@ const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
-    // [authSlice.name]: authSlice.reducer,
     user: authSlice.reducer,
   },
 
@@ -16,7 +15,6 @@ const store = configureStore({
     getDefaultMiddleware().concat([
       apiSlice.middleware,
       authApiSlice.middleware,
-      // authSlice.middleware,
     ]),
 });
 

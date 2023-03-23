@@ -29,6 +29,7 @@ class TokenService {
   }
 
   static verifyAccessToken(accessToken) {
+    console.log(accessToken);
     const accessTokenCheck = jwt.verify(
       accessToken,
       // eslint-disable-next-line

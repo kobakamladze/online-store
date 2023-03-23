@@ -1,8 +1,8 @@
-import { Suspense } from "react";
+import { useSelector } from "react-redux";
 import { Container } from "react-bootstrap";
-import { Await, useLoaderData } from "react-router-dom";
 
 import CartItem from "../components/cartItem/CartItem";
+import { useFetchCartItemsQuery } from "../store/slices/authApiSlice";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 const CartList = ({ data }) => {
@@ -23,16 +23,15 @@ const CartList = ({ data }) => {
 };
 
 const CartPage = () => {
-  const data = useLoaderData();
+  const userId = useSelector(state => state.user.id);
+  const { data, isLoading } = useFetchCartItemsQuery(userId);
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Await resolve={data}>
-        <Container>
-          <CartList data={data} />
-        </Container>
-      </Await>
-    </Suspense>
+    <Container>
+      <CartList data={data} />
+    </Container>
   );
 };
 
