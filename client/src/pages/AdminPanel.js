@@ -11,11 +11,7 @@ import { useGetBrandsQuery, useGetTypesQuery } from "../store/slices/apiSlice";
 const AdminPanel = () => {
   const data = useLoaderData();
 
-  const {
-    data: brands,
-    // error,
-    isLoading: brandsIsLoading,
-  } = useGetBrandsQuery();
+  const { data: brands, isLoading: brandsIsLoading } = useGetBrandsQuery();
   const { data: types, isLoading: typesIsloading } = useGetTypesQuery();
 
   if (brandsIsLoading || typesIsloading) return <LoadingSpinner />;

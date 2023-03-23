@@ -2,25 +2,30 @@ import { useState } from "react";
 import { Button, Dropdown } from "react-bootstrap/esm";
 import { Form } from "react-bootstrap";
 
-import { authHost } from "../../http";
+import { useAddBrandMutation } from "../../store/slices/authApiSlice";
 
 const BrandAddForm = ({ types }) => {
+  const [addBrand] = useAddBrandMutation();
+
   const [brandName, setBrandName] = useState("");
   const [chosenTypeForBrand, setChosenTypeForBrand] = useState({
     id: "",
     name: "",
   });
 
-  const handleBrandSubmit = (e) => {
+  const handleBrandSubmit = async e => {
     e.preventDefault();
-    return authHost
-      .post("/api/brand", {
+    try {
+      await addBrand({
         brandName,
         typeName: chosenTypeForBrand.name,
         typeId: chosenTypeForBrand.id,
-      })
-      .then(() => alert("Brand added"))
-      .catch((e) => alert(e.response.data.message));
+      });
+
+      alert("Brand added");
+    } catch (e) {
+      alert(e.response.data.message);
+    }
   };
 
   return (
@@ -32,7 +37,7 @@ const BrandAddForm = ({ types }) => {
             type="text"
             placeholder="Enter brand name"
             value={brandName}
-            onChange={(e) => setBrandName(e.target.value.toLowerCase())}
+            onChange={e => setBrandName(e.target.value.toLowerCase())}
           />
         </Form.Group>
 
@@ -46,7 +51,7 @@ const BrandAddForm = ({ types }) => {
               <Dropdown.Item
                 key={id}
                 id={id}
-                onClick={(e) =>
+                onClick={e =>
                   setChosenTypeForBrand(() => ({
                     id,
                     name: e.target.textContent,
@@ -62,7 +67,7 @@ const BrandAddForm = ({ types }) => {
         <Button
           variant="primary"
           type="submit"
-          onClick={(e) => handleBrandSubmit(e)}
+          onClick={e => handleBrandSubmit(e)}
         >
           Submit
         </Button>

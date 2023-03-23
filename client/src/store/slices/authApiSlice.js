@@ -70,6 +70,9 @@ export const {
   useAddToCartMutation,
   useDeleteCartItemMutation,
   useFetchCartItemsQuery,
+  useAddBrandMutation,
+  useAddTypeMutation,
+  useAddDeviceMutation,
 } = authApiSlice.injectEndpoints({
   endpoints: builder => ({
     authCheck: builder.query({
@@ -94,6 +97,27 @@ export const {
         body: { userId },
       }),
       invalidatesTags: ["cart"],
+    }),
+    addBrand: builder.mutation({
+      query: data => ({
+        url: `brand`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    addType: builder.mutation({
+      query: data => ({
+        url: `type`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    addDevice: builder.mutation({
+      query: data => ({
+        url: `device`,
+        method: "POST",
+        body: data,
+      }),
     }),
   }),
 });

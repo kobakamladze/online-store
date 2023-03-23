@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Button, Col, Dropdown, Row } from "react-bootstrap/esm";
 import { Form } from "react-bootstrap";
 
-import { authHost } from "../../http";
+import { useAddDeviceMutation } from "../../store/slices/authApiSlice";
 
 const DeviceAddForm = ({ types, brands }) => {
-  // main fields
+  const [addDevice] = useAddDeviceMutation();
+
   const [deviceName, setDeviceName] = useState("");
   const [devicePrice, setDevicePrice] = useState(0);
   const [deviceImageURL, setDeviceImageURL] = useState("");
@@ -20,26 +21,25 @@ const DeviceAddForm = ({ types, brands }) => {
   // device description
   const [info, setInfo] = useState([]);
 
-  const addDescriptionField = (e) =>
-    setInfo((state) => [
+  const addDescriptionField = e =>
+    setInfo(state => [
       ...state,
       { propertyName: "", propertyValue: "", id: crypto.randomUUID() },
     ]);
 
-  const deleteDescriptionField = (recievedId) =>
-    setInfo((state) => [...state.filter(({ id }) => id !== recievedId)]);
+  const deleteDescriptionField = recievedId =>
+    setInfo(state => [...state.filter(({ id }) => id !== recievedId)]);
 
   const addValueToDescriptionField = (e, recievedId) =>
-    setInfo((state) => [
-      ...state.map((field) =>
+    setInfo(state => [
+      ...state.map(field =>
         field.id === recievedId
           ? { ...field, [e.target.name]: e.target.value }
           : field
       ),
     ]);
 
-  // handler - submiter function
-  const handleDeviceSubmit = (e) => {
+  const handleDeviceSubmit = async e => {
     e.preventDefault();
 
     // transforms collection of objects into one object to add
@@ -49,17 +49,20 @@ const DeviceAddForm = ({ types, brands }) => {
       {}
     );
 
-    return authHost
-      .post("/api/device", {
+    try {
+      await addDevice({
         deviceName,
         price: devicePrice,
         imageURL: deviceImageURL,
         typeId: chosenType.id,
         brandId: chosenBrand.id,
         info: deviceInfo,
-      })
-      .then(() => alert("Device added"))
-      .catch((e) => alert(e.response.data.message));
+      });
+
+      alert("Device added");
+    } catch (e) {
+      alert(e.response.data.message);
+    }
   };
 
   return (
@@ -70,7 +73,7 @@ const DeviceAddForm = ({ types, brands }) => {
           <Form.Control
             className="my-2"
             value={deviceName}
-            onChange={(e) => setDeviceName(e.target.value.toLowerCase())}
+            onChange={e => setDeviceName(e.target.value.toLowerCase())}
             type="text"
             placeholder="Device name"
           />
@@ -78,7 +81,7 @@ const DeviceAddForm = ({ types, brands }) => {
           <Form.Control
             className="my-2"
             value={devicePrice}
-            onChange={(e) => setDevicePrice(e.target.value)}
+            onChange={e => setDevicePrice(e.target.value)}
             type="number"
             placeholder="Price"
           />
@@ -86,7 +89,7 @@ const DeviceAddForm = ({ types, brands }) => {
           <Form.Control
             className="my-2"
             value={deviceImageURL}
-            onChange={(e) => setDeviceImageURL(e.target.value)}
+            onChange={e => setDeviceImageURL(e.target.value)}
             type="text"
             placeholder="Image URL"
           />
@@ -102,7 +105,7 @@ const DeviceAddForm = ({ types, brands }) => {
               <Dropdown.Item
                 key={id}
                 id={id}
-                onClick={(e) =>
+                onClick={e =>
                   setChosenType(() => ({
                     id,
                     name: e.target.textContent,
@@ -125,7 +128,7 @@ const DeviceAddForm = ({ types, brands }) => {
               <Dropdown.Item
                 key={id}
                 id={id}
-                onClick={(e) =>
+                onClick={e =>
                   setChosenBrand(() => ({
                     id,
                     name: e.target.textContent,
@@ -146,14 +149,14 @@ const DeviceAddForm = ({ types, brands }) => {
                 <Form.Control
                   name="propertyName"
                   placeholder="Enter property name"
-                  onChange={(e) => addValueToDescriptionField(e, object.id)}
+                  onChange={e => addValueToDescriptionField(e, object.id)}
                 />
               </Col>
               <Col md={4}>
                 <Form.Control
                   name="propertyValue"
                   placeholder="Enter value"
-                  onChange={(e) => addValueToDescriptionField(e, object.id)}
+                  onChange={e => addValueToDescriptionField(e, object.id)}
                 />
               </Col>
               <Col md={4}>
@@ -169,7 +172,7 @@ const DeviceAddForm = ({ types, brands }) => {
         </div>
 
         <Button
-          onClick={(e) => handleDeviceSubmit(e)}
+          onClick={e => handleDeviceSubmit(e)}
           variant="primary"
           type="submit"
         >
