@@ -79,14 +79,14 @@ export const {
     }),
     addToCart: builder.mutation({
       query: ({ deviceId, userId }) => ({
-        args: `cart/add/${deviceId}`,
+        url: `cart/add/${deviceId}`,
         method: "POST",
         body: { userId },
       }),
     }),
     deleteCartItem: builder.mutation({
       query: ({ deviceId, userId }) => ({
-        args: `cart/delete/${deviceId}`,
+        url: `cart/delete/${deviceId}`,
         method: "DELETE",
         body: { userId },
       }),

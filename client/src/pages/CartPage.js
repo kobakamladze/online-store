@@ -6,7 +6,7 @@ import { useFetchCartItemsQuery } from "../store/slices/authApiSlice";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 const CartList = ({ data }) => {
-  if (!data.length)
+  if (!data?.length)
     return (
       <div>
         <h3>Cart is empty</h3>
