@@ -9,11 +9,11 @@ import "./App.css";
 import Auth from "../pages/Auth";
 import Catalog from "../pages/Catalog";
 import DevicePage from "../pages/DevicePage";
-import Layout from "../pages/Layout";
+import Layout from "../layouts/Layout";
 import Error from "../pages/Error";
 import AdminPanel from "../pages/AdminPanel";
 import CartPage from "../pages/CartPage";
-import AuthRoute from "../routes/AuthRoute";
+import AuthRoute from "../layouts/AuthRoute";
 import LoadingSpinner from "../components/loadingSpinner/LoadingSpinner";
 
 import { useAuthCheckQuery } from "../store/slices/authApiSlice";
@@ -29,9 +29,13 @@ const appRouter = createBrowserRouter(
 
       <Route element={<AuthRoute />}>
         <Route path="cart/:userId" element={<CartPage />} />
+      </Route>
+
+      <Route element={<AuthRoute onlyForAdmins={true} />}>
         <Route path="admin-panel" element={<AdminPanel />} />
       </Route>
 
+      <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>
   )

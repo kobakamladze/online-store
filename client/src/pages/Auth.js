@@ -32,7 +32,6 @@ const Auth = () => {
         try {
           const navigateTo = location.search ? -2 : "/";
 
-          // dispatch(loginMiddleware({ email, password }));
           const data = await login({ email, password }).unwrap();
 
           localStorage.setItem("accessToken", data.accessToken);
@@ -46,9 +45,17 @@ const Auth = () => {
           return e;
         }
       case "/registration":
-        return register({ email, password })
-          .then(response => response)
-          .catch(e => navigate(0));
+        try {
+          const response = await register({ email, password });
+          console.log(response);
+
+          setEmail("");
+          setPassword("");
+
+          return navigate("/login");
+        } catch (e) {
+          return navigate(0);
+        }
       default:
         return navigate(0);
     }
