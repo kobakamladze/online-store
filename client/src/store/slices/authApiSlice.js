@@ -61,6 +61,7 @@ const authQueryWithRetry = async (args, api, extraOptions) => {
 export const authApiSlice = createApi({
   reducerPath: "authorization",
   baseQuery: authQueryWithRetry,
+  tagTypes: ["cart"],
   endpoints: builder => ({}),
 });
 
@@ -76,6 +77,7 @@ export const {
     }),
     fetchCartItems: builder.query({
       query: userId => `cart/${userId}`,
+      providesTags: ["cart"],
     }),
     addToCart: builder.mutation({
       query: ({ deviceId, userId }) => ({
@@ -83,6 +85,7 @@ export const {
         method: "POST",
         body: { userId },
       }),
+      invalidatesTags: ["cart"],
     }),
     deleteCartItem: builder.mutation({
       query: ({ deviceId, userId }) => ({
@@ -90,6 +93,7 @@ export const {
         method: "DELETE",
         body: { userId },
       }),
+      invalidatesTags: ["cart"],
     }),
   }),
 });

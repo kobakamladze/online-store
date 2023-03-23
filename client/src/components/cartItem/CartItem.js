@@ -12,11 +12,13 @@ const CartItem = ({ deviceData: { id, name, price, rating, img } }) => {
   const user = useSelector(state => state.user);
   const mountStyle = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
 
-  const removeDeviceFromCart = (e, { userId, deviceId }) => {
+  const removeDeviceFromCart = async (e, { userId, deviceId }) => {
     e.preventDefault();
-    return deleteCartItem({ userId, deviceId })
-      .catch(e => console.log(e))
-      .finally(() => navigate(0));
+    try {
+      await deleteCartItem({ userId, deviceId });
+    } catch (e) {
+      return e;
+    }
   };
 
   return (
